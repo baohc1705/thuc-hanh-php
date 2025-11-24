@@ -1,0 +1,31 @@
+# .github/workflows/deploy.yml
+
+name: Deploy Website to InfinityFree (huynhchibao.42web.io)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload via FTP to InfinityFree
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftpupload.net
+          username: ${{ secrets.FTP_USERNAME }}     # FTP username infinity free
+          password: ${{ secrets.FTP_PASSWORD }}     # FTP password infinity free
+          local-dir: ./                              # root directory
+          server-dir: /htdocs/                       # website directory
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.github*
+            **/README.md
+            **/deploy.yml
