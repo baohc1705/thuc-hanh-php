@@ -6,6 +6,12 @@
     <title>Document</title>
 </head>
 <body>
-    Heloo bao
+    <?php 
+        $a = 1.4;
+        if (is_integer($a)) 
+            echo "$a la so nguyen";
+        else 
+            echo "$a khong phai so nguyen";
+    ?>
 </body>
 </html>

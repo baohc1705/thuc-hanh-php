@@ -2,10 +2,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Untitled Document</title>
+<title>Lab 2_3</title>
 </head>
 
 <body>
-Trang bạn tìm không có!
+<?php 
+//const PI=3.14;
+define("PI",3.14);
+$r=10;
+echo "Diện tích hình tròn có bán kính $r là: ".($r*$r*PI);
+?>
+<br>
+<i>Co the thay the bang define("Pi", 3.14)</i>
 </body>
 </html>
