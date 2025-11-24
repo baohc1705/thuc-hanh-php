@@ -19,13 +19,15 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ftpupload.net
-          username: ${{ secrets.FTP_USERNAME }}     # FTP username infinity free
-          password: ${{ secrets.FTP_PASSWORD }}     # FTP password infinity free
-          local-dir: ./                              # root directory
-          server-dir: /htdocs/                       # website directory
+          username: ${{ secrets.FTP_USERNAME }}       # FTP username InfinityFree
+          password: ${{ secrets.FTP_PASSWORD }}       # FTP password InfinityFree
+          local-dir: ./                                # root directory
+          server-dir: /htdocs/                         # website directory
           dangerous-clean-slate: false
           exclude: |
-            **/.git*
-            **/.github*
-            **/README.md
+            **/.git/**
+            **/.github/**
+            **/.gitignore
+            **/*.md
             **/deploy.yml
+            **/.ftp-deploy-sync-state.json
