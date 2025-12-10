@@ -14,8 +14,8 @@ $order_id = (int)$_GET['order_id'];
 try {
     $sql = "SELECT o.*, 
                    CASE 
-                       WHEN o.payment_method = 'cod' THEN 'Thanh toán khi nhận hàng (COD)'
-                       WHEN o.payment_method = 'bank_transfer' THEN 'Chuyển khoản ngân hàng'
+                       WHEN o.payment_method = 'cod' THEN 'COD'
+                       WHEN o.payment_method = 'vnpay' THEN 'VNPAY'
                        ELSE 'Không xác định'
                    END as payment_name
             FROM orders o 
@@ -94,9 +94,15 @@ try {
                                         <td><?= htmlspecialchars($order['address']) ?></td>
                                     </tr>
                                     <tr>
-                                        <td class="text-muted">Phương thức TT</td>
+                                        <td class="text-muted">Phương thức thanh toán</td>
                                         <td>
                                             <span class="badge bg-success fs-6"><?= $order['payment_name'] ?></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">Trạng thái thanh toán</td>
+                                        <td>
+                                            <span class="badge <?= $order['payment_status'] === 'paid' ? 'bg-success' : 'bg-warning' ?> fs-6"><?= $order['payment_status'] ?></span>
                                         </td>
                                     </tr>
                                     <?php if (!empty($order['note'])): ?>

@@ -16,8 +16,8 @@ try {
                    (SELECT p.image FROM order_detail od JOIN product p ON od.product_id = p.id WHERE od.order_id = o.id LIMIT 1) AS first_product_image,
                    (SELECT SUM(quantity) FROM order_detail WHERE order_id = o.id) AS items_count,
                    CASE 
-                     WHEN o.payment_method = 'cod' THEN 'Thanh toán khi nhận hàng (COD)'
-                     WHEN o.payment_method = 'bank_transfer' THEN 'Chuyển khoản ngân hàng'
+                     WHEN o.payment_method = 'cod' THEN 'Thanh toán khi nhận hàng'
+                     WHEN o.payment_method = 'vnpay' THEN 'Chuyển khoản ngân hàng'
                      ELSE 'Không xác định'
                    END AS payment_name
             FROM orders o

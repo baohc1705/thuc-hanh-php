@@ -60,7 +60,7 @@ $status_map = [
 ];
 $payment_map = [
     'cod' => 'Thanh toán khi nhận hàng (COD)',
-    'bank_transfer' => 'Chuyển khoản ngân hàng'
+    'vnpay' => 'Chuyển khoản ngân hàng'
 ];
 ?>
 <!DOCTYPE html>
@@ -114,6 +114,11 @@ $payment_map = [
                             <p class="mb-1"><strong>Trạng thái:</strong>
                                 <span class="badge <?= ($order['status'] == 'pending') ? 'bg-warning text-dark' : (($order['status'] == 'delivered') ? 'bg-success' : 'bg-secondary') ?>">
                                     <?= htmlspecialchars($status_map[$order['status']] ?? $order['status']) ?>
+                                </span>
+                            </p>
+                            <p class="mb-1"><strong>Trạng thái thanh toán:</strong>
+                                <span class="badge <?= ($order['payment_status'] === 'unpaid') ? 'bg-warning text-dark' : 'bg-success' ?>">
+                                    <?= ($order['payment_status'] == 'unpaid') ? 'Chưa thanh toán' : 'Đã thanh toán' ?>
                                 </span>
                             </p>
                         </div>

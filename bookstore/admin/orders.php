@@ -11,11 +11,6 @@ $search_q = isset($_GET['q']) && !empty($_GET['q']) ? trim($_GET['q']) : '';
 try {
     $sql = "SELECT o.*, u.fullname, u.email,
             CASE 
-                WHEN o.payment_method = 'cod' THEN 'Thanh toán khi nhận hàng'
-                WHEN o.payment_method = 'bank_transfer' THEN 'Chuyển khoản ngân hàng'
-                ELSE 'Không xác định'
-            END as payment_name,
-            CASE 
                 WHEN o.status = 'pending' THEN 'Chờ xử lý'
                 WHEN o.status = 'confirmed' THEN 'Đã xác nhận'
                 WHEN o.status = 'shipping' THEN 'Đang giao'
@@ -26,7 +21,7 @@ try {
             FROM orders o
             JOIN users u ON o.user_id = u.id
             WHERE 1=1";
-    
+
     $params = [];
 
     // Lọc theo trạng thái
@@ -50,7 +45,6 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 } catch (PDOException $e) {
     $err = $e->getMessage();
 }
@@ -115,14 +109,13 @@ $status_options = [
                                         <div class="col-md-5 col-12">
                                             <!-- Tìm kiếm -->
                                             <div class="input-group">
-                                                <input 
-                                                    class="form-control" 
-                                                    type="search" 
+                                                <input
+                                                    class="form-control"
+                                                    type="search"
                                                     name="q"
-                                                    placeholder="Tìm mã đơn, tên khách hàng, email..." 
+                                                    placeholder="Tìm mã đơn, tên khách hàng, email..."
                                                     value="<?= htmlspecialchars($search_q) ?>"
-                                                    aria-label="Search" 
-                                                />
+                                                    aria-label="Search" />
                                                 <button class="btn btn-outline-secondary" type="submit">
                                                     <i class="bi bi-search"></i>
                                                 </button>
@@ -186,6 +179,7 @@ $status_options = [
                                                     <th>Khách hàng</th>
                                                     <th>Ngày đặt</th>
                                                     <th>Phương thức TT</th>
+                                                    <th>Trạng thái thanh toán</th>
                                                     <th>Trạng thái</th>
                                                     <th>Tổng tiền</th>
                                                     <th></th>
@@ -209,7 +203,7 @@ $status_options = [
                                                         <tr>
                                                             <td>
                                                                 <a href="order-detail.php?id=<?= $order['id'] ?>" class="text-reset fw-semibold">
-                                                                    #<?= str_pad($order['id'], 6, '0', STR_PAD_LEFT) ?>
+                                                                    <?= $order['id'] ?>
                                                                 </a>
                                                             </td>
                                                             <td>
@@ -222,7 +216,13 @@ $status_options = [
                                                                 <?= date('d/m/Y H:i', strtotime($order['created_at'])) ?>
                                                             </td>
                                                             <td class="small">
-                                                                <?= htmlspecialchars($order['payment_name']) ?>
+                                                                <?= htmlspecialchars($order['payment_method']) ?>
+                                                            </td>
+                                                            <td class="small">
+                                                                <span class="badge <?= $order['payment_status'] === 'paid' ? 'bg-light-primary text-dark-primary' : 'bg-light-warning text-dark-warning' ?>">
+                                                                    <?= htmlspecialchars($order['payment_status'] === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán') ?>
+                                                                </span>
+
                                                             </td>
                                                             <td>
                                                                 <?php

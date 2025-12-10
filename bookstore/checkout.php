@@ -1,6 +1,8 @@
 <?php
 session_start();
 include('config/config.php');
+include('config/vnpay_config.php');
+$vnp_Config = include 'config/vnpay_config.php';
 
 function getCart()
 {
@@ -46,24 +48,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Tạo mã đơn hàng dạng chuỗi thời gian + 4 số random
                 $order_id = date('YmdHis') . rand(1000, 9999);
 
-                $sql = "INSERT INTO orders (id, user_id, total_price, recipient, phone, address, note, status, payment_status, payment_method, created_at) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?,'unpaid', 'pending', ?, NOW())";
+                $status = ($payment === 'cod') ? 'pending' : 'pending';
+                $payment_status = ($payment === 'cod') ? 'unpaid' : 'unpaid';
+
+                $sql = "INSERT INTO orders 
+                        (id, user_id, total_price, recipient, phone, address, note, 
+                         status, payment_status, payment_method, created_at) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute([$order_id, $_SESSION['user_id'], $cartStats['total'], $recipient, $phone, $address, $note, $payment]);
+                $stmt->execute([
+                    $order_id,
+                    $_SESSION['user_id'],
+                    $cartStats['total'],
+                    $recipient,
+                    $phone,
+                    $address,
+                    $note,
+                    $status,
+                    $payment_status,
+                    $payment
+                ]);
 
-                //$order_id = $pdo->lastInsertId();
 
-                $sqlDetail = "INSERT INTO order_detail (order_id, product_id, quantity, price, total) VALUES (?, ?, ?, ?, ?)";
+
+                // Insert chi tiết đơn hàng
+                $sqlDetail = "INSERT INTO order_detail (order_id, product_id, quantity, price, total) 
+                              VALUES (?, ?, ?, ?, ?)";
                 $stmtDetail = $pdo->prepare($sqlDetail);
-
                 foreach ($cart as $item) {
-                    $stmtDetail->execute([$order_id, $item['id'], $item['quantity'], $item['price'], $item['price'] * $item['quantity']]);
+                    $stmtDetail->execute([
+                        $order_id,
+                        $item['id'],
+                        $item['quantity'],
+                        $item['price'],
+                        $item['price'] * $item['quantity']
+                    ]);
                 }
 
                 $pdo->commit();
-                setcookie('unibook_cart', '', time() - 3600, '/');
-                header("Location: order-success.php?order_id=$order_id");
-                exit;
+
+                // === XỬ LÝ THANH TOÁN ===
+                if ($payment === 'cod') {
+                    // COD → xóa giỏ và chuyển sang trang thành công
+                    setcookie('unibook_cart', '', time() - 3600, '/');
+                    header("Location: order-success.php?order_id=$order_id");
+                    exit;
+                } else {
+                    // VNPAY → tạo URL thanh toán
+                    $vnp_TxnRef = $order_id;
+                    $vnp_OrderInfo = "Thanh toán đơn hàng UniBook #$order_id";
+                    $vnp_OrderType = 'billpayment';
+                    $vnp_Amount = $cartStats['total'] * 100; // VNPAY tính theo đồng
+                    $vnp_Locale = 'vn';
+                    $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
+                    $vnp_ReturnUrl = $vnp_Config['vnp_ReturnUrl'];
+
+                    $inputData = array(
+                        "vnp_Version" => "2.1.0",
+                        "vnp_TmnCode" => $vnp_Config['vnp_TmnCode'],
+                        "vnp_Amount" => $vnp_Amount,
+                        "vnp_Command" => "pay",
+                        "vnp_CreateDate" => date('YmdHis'),
+                        "vnp_CurrCode" => "VND",
+                        "vnp_IpAddr" => $vnp_IpAddr,
+                        "vnp_Locale" => $vnp_Locale,
+                        "vnp_OrderInfo" => $vnp_OrderInfo,
+                        "vnp_OrderType" => $vnp_OrderType,
+                        "vnp_ReturnUrl" => $vnp_ReturnUrl,
+                        "vnp_TxnRef" => $vnp_TxnRef,
+                    );
+
+                    ksort($inputData);
+                    $hashdata = "";
+                    $i = 0;
+                    foreach ($inputData as $key => $value) {
+                        if ($i == 1) $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
+                        else {
+                            $hashdata .= urlencode($key) . "=" . urlencode($value);
+                            $i = 1;
+                        }
+                    }
+
+                    $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_Config['vnp_HashSecret']);
+                    $vnp_Url = $vnp_Config['vnp_Url'] . "?" . http_build_query($inputData) . '&vnp_SecureHash=' . $vnpSecureHash;
+
+                    // Chuyển hướng sang VNPAY
+                    header('Location: ' . $vnp_Url);
+                    exit;
+                }
             } catch (Exception $e) {
                 $pdo->rollBack();
                 $err = "Đặt hàng thất bại, vui lòng thử lại!";
@@ -163,9 +235,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="bank" value="bank_transfer">
-                                    <label class="form-check-label fs-5" for="bank">
-                                        Chuyển khoản ngân hàng
+                                    <input class="form-check-input" type="radio" name="payment_method" id="vnpay" value="vnpay">
+                                    <label class="form-check-label fs-5" for="vnpay">
+                                        <img src="https://vnpay.vn/assets/images/logo-icon.png" width="20" class="me-2">
+                                        Thanh toán qua VNPAY (Thẻ ATM / QR / Ví)
                                     </label>
                                 </div>
                             </div>
