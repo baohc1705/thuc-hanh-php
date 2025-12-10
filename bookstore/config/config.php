@@ -1,8 +1,8 @@
 <?php
-$host = 'localhost'; // Địa chỉ máy chủ cơ sở dữ liệu
-$dbname = 'bookstore'; // Tên cơ sở dữ liệu
-$username = 'root'; // Tên người dùng
-$password = ''; // Mật khẩu
+$host = 'sql202.infinityfree.com'; // Địa chỉ máy chủ cơ sở dữ liệu
+$dbname = 'if0_40390960_bookstore'; // Tên cơ sở dữ liệu
+$username = 'if0_40390960'; // Tên người dùng
+$password = 'huynhchibao'; // Mật khẩu
 
 try {
     // Tạo kết nối PDO
