@@ -1,257 +1,200 @@
-<!DOCTYPE html>
-<html lang="en">
-  <!-- Mirrored from freshcart.codescandy.com/dashboard/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 14 Nov 2024 06:08:49 GMT -->
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta content="Codescandy" name="author" />
-    <title>Dashboard eCommerce HTML Template - FreshCart</title>
-    <!-- Favicon icon-->
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="../images/favicon/favicon.ico"
-    />
+<?php
+include('../config/config.php');
 
-    <!-- Libs CSS -->
-    <link
-      href="../libs/bootstrap-icons/font/bootstrap-icons.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="../libs/feather-webfont/dist/feather-icons.css"
-      rel="stylesheet"
-    />
-    <link
-      href="../libs/simplebar/dist/simplebar.min.css"
-      rel="stylesheet"
-    />
+$err = "";
+$success = "";
+$categories = [];
 
-    <!-- Theme CSS -->
-    <link rel="stylesheet" href="../css/theme.min.css" />
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-M8S4MT3EYG"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
+// Lấy danh sách danh mục
+try {
+   $sql = "SELECT id, name FROM category WHERE status = 1 ORDER BY name";
+   $stmt = $pdo->query($sql);
+   $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+   $err = "Lỗi lấy danh mục: " . $e->getMessage();
+}
+
+// Xử lý khi submit form
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+   $title = $_POST['title'] ?? '';
+   $description = $_POST['description'] ?? '';
+   $author = $_POST['author'] ?? '';
+   $price = $_POST['price'] ?? 0;
+   $category_id = $_POST['category_id'] ?? null;
+   $stock = $_POST['stock'] ?? 0;
+   $status = $_POST['status'] ?? 1;
+
+   // Xử lý upload ảnh
+   $image = "";
+   if (!empty($_FILES['image']['name'])) {
+
+      $fileName = time() . "_" . $_FILES['image']['name'];
+      $targetPath = "../products/" . $fileName;
+
+      // Tạo thư mục nếu chưa có
+      if (!file_exists("../products")) {
+         mkdir("../products", 0777, true);
       }
-      gtag("js", new Date());
 
-      gtag("config", "G-M8S4MT3EYG");
-    </script>
-    <script type="text/javascript">
-      (function (c, l, a, r, i, t, y) {
-        c[a] =
-          c[a] ||
-          function () {
-            (c[a].q = c[a].q || []).push(arguments);
-          };
-        t = l.createElement(r);
-        t.async = 1;
-        t.src = "https://www.clarity.ms/tag/" + i;
-        y = l.getElementsByTagName(r)[0];
-        y.parentNode.insertBefore(t, y);
-      })(window, document, "clarity", "script", "kuc8w5o9nt");
-    </script>
-  </head>
+      if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+         $image = $fileName;
+      } else {
+         $err = "Upload ảnh thất bại!";
+      }
+   }
 
-  <body>
-    <!-- main -->
-    <div>
+   if (empty($title)) {
+      $err = "Vui lòng nhập tên sản phẩm!";
+   } elseif (empty($price) || $price <= 0) {
+      $err = "Vui lòng nhập giá sản phẩm hợp lệ!";
+   } elseif (empty($category_id)) {
+      $err = "Vui lòng chọn danh mục!";
+   } elseif (empty($stock) || $stock <= 0) {
+      $err = "Vui lòng nhập số lượng hợp lệ!";
+   } elseif (empty($author)) {
+      $err = "Vui lòng nhập vào tên tác giả!";
+   }
+
+   if ($err === "") {
+      try {
+         $sql = "INSERT INTO product (title, description, price, image, category_id, stock, status, author, createAt) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+
+         $stmt = $pdo->prepare($sql);
+         $stmt->execute([$title, $description, $price, $image, $category_id, $stock, $status, $author]);
+
+         header("Location: products.php?add=success");
+         exit;
+      } catch (PDOException $e) {
+         $err = "Lỗi thêm sản phẩm: " . $e->getMessage();
+      }
+   }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+   <title>Thêm sản phẩm mới - Unibook</title>
+   <?php include("include/lib.php") ?>
+</head>
+
+<body>
+   <!-- main -->
+   <div>
       <!-- navbar -->
       <?php include('header.php') ?>
 
       <div class="main-wrapper">
 
-        <?php include('sidebar.php') ?>
+         <?php include('sidebar.php') ?>
 
-        <!-- main wrapper -->
-        <main class="main-content-wrapper">
-            <!-- container -->
+         <!-- main wrapper -->
+         <main class="main-content-wrapper">
             <div class="container">
-               <!-- row -->
-               <div class="row mb-8">
-                  <div class="col-md-12">
-                     <div class="d-md-flex justify-content-between align-items-center">
-                        <!-- page header -->
-                        <div>
-                           <h2>Add New Product</h2>
-                           <!-- breacrumb -->
-                           <nav aria-label="breadcrumb">
-                              <ol class="breadcrumb mb-0">
-                                 <li class="breadcrumb-item"><a href="#" class="text-inherit">Dashboard</a></li>
-                                 <li class="breadcrumb-item"><a href="#" class="text-inherit">Products</a></li>
-                                 <li class="breadcrumb-item active" aria-current="page">Add New Product</li>
-                              </ol>
-                           </nav>
-                        </div>
-                        <!-- button -->
-                        <div>
-                           <a href="products.html" class="btn btn-light">Back to Product</a>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-               <!-- row -->
-               <div class="row">
-                  <div class="col-lg-8 col-12">
-                     <!-- card -->
-                     <div class="card mb-6 card-lg">
-                        <!-- card body -->
-                        <div class="card-body p-6">
-                           <h4 class="mb-4 h5">Product Information</h4>
-                           <div class="row">
-                              <!-- input -->
-                              <div class="mb-3 col-lg-6">
-                                 <label class="form-label">Title</label>
-                                 <input type="text" class="form-control" placeholder="Product Name" required />
-                              </div>
-                              <!-- input -->
-                              <div class="mb-3 col-lg-6">
-                                 <label class="form-label">Product Category</label>
-                                 <select class="form-select">
-                                    <option selected>Product Category</option>
-                                    <option value="Dairy, Bread & Eggs">Dairy, Bread & Eggs</option>
-                                    <option value="Snacks & Munchies">Snacks & Munchies</option>
-                                    <option value="Fruits & Vegetables">Fruits & Vegetables</option>
-                                 </select>
-                              </div>
-                              <!-- input -->
-                              <div class="mb-3 col-lg-6">
-                                 <label class="form-label">Weight</label>
-                                 <input type="text" class="form-control" placeholder="Weight" required />
-                              </div>
-                              <!-- input -->
-                              <div class="mb-3 col-lg-6">
-                                 <label class="form-label">Units</label>
-                                 <select class="form-select">
-                                    <option selected>Select Units</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                 </select>
-                              </div>
-                              <div>
-                                 <div class="mb-3 col-lg-12 mt-5">
-                                    <!-- heading -->
-                                    <h4 class="mb-3 h5">Product Images</h4>
 
-                                    <!-- input -->
-                                    <div id="my-dropzone" class="dropzone mt-4 border-dashed rounded-2 min-h-0"></div>
-                                 </div>
+               <h2 class="mb-5">Thêm sản phẩm mới</h2>
+
+               <?php if (!empty($err)): ?>
+                  <div class="alert alert-danger"><?= $err ?></div>
+               <?php endif; ?>
+               <form action="add-product.php" method="POST" enctype="multipart/form-data">
+                  <div class="row">
+                     <div class="col-md-8">
+                        <div class="card">
+                           <div class="card-body">
+                              <!-- Hình ảnh -->
+                              <div class="mb-3">
+                                 <label class="form-label">Ảnh sản phẩm</label>
+                                 <input type="file" name="image" class="form-control" accept="image/*" />
                               </div>
-                              <!-- input -->
-                              <div class="mb-3 col-lg-12 mt-5">
-                                 <h4 class="mb-3 h5">Product Descriptions</h4>
-                                 <div class="py-8" id="editor"></div>
+
+                              <!-- Tên sản phẩm -->
+                              <div class="mb-3">
+                                 <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                                 <input type="text" name="title" class="form-control" required />
                               </div>
+
+                              <!-- Mô tả -->
+                              <div class="mb-3">
+                                 <label class="form-label">Mô tả</label>
+                                 <textarea name="description" class="form-control" rows="4"></textarea>
+                              </div>
+
+
+
+                              <!-- Danh mục -->
+                              <div class="mb-3">
+                                 <label class="form-label">Danh mục <span class="text-danger">*</span></label>
+                                 <select name="category_id" class="form-control" required>
+                                    <option value="">-- Chọn danh mục --</option>
+                                    <?php foreach ($categories as $cat): ?>
+                                       <option value="<?= $cat['id'] ?>"><?= $cat['name'] ?></option>
+                                    <?php endforeach; ?>
+                                 </select>
+                              </div>
+
+                              <!-- Tác giả -->
+                              <div class="mb-3">
+                                 <label class="form-label">Tác giả <span class="text-danger">*</span></label>
+                                 <input type="text" name="author" class="form-control" required />
+                              </div>
+
+
+                              <button class="btn btn-primary" type="submit">Thêm sản phẩm</button>
+                              <a href="products.php" class="btn btn-secondary">Quay lại</a>
+
                            </div>
                         </div>
                      </div>
-                  </div>
-                  <div class="col-lg-4 col-12">
-                     <!-- card -->
-                     <div class="card mb-6 card-lg">
-                        <!-- card body -->
-                        <div class="card-body p-6">
-                           <!-- input -->
-                           <div class="form-check form-switch mb-4">
-                              <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchStock" checked />
-                              <label class="form-check-label" for="flexSwitchStock">In Stock</label>
-                           </div>
-                           <!-- input -->
-                           <div>
+                     <div class="col-md-4">
+                        <div class="card">
+                           <div class="card-body">
+                              <!-- Trạng thái -->
                               <div class="mb-3">
-                                 <label class="form-label">Product Code</label>
-                                 <input type="text" class="form-control" placeholder="Enter Product Title" />
-                              </div>
-                              <!-- input -->
-                              <div class="mb-3">
-                                 <label class="form-label">Product SKU</label>
-                                 <input type="text" class="form-control" placeholder="Enter Product Title" />
-                              </div>
-                              <!-- input -->
-                              <div class="mb-3">
-                                 <label class="form-label" id="productSKU">Status</label>
+                                 <label class="form-label" id="productSKU">Trạng thái</label>
                                  <br />
                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked />
-                                    <label class="form-check-label" for="inlineRadio1">Active</label>
+                                    <input class="form-check-input" type="radio" name="status" id="inlineRadio1" value="1" checked />
+                                    <label class="form-check-label" for="inlineRadio1">Kinh doanh</label>
                                  </div>
-                                 <!-- input -->
+
                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" />
-                                    <label class="form-check-label" for="inlineRadio2">Disabled</label>
+                                    <input class="form-check-input" type="radio" name="status" id="inlineRadio2" value="0" />
+                                    <label class="form-check-label" for="inlineRadio2">Không kinh doanh</label>
                                  </div>
-                                 <!-- input -->
+                              </div>
+
+                              <!-- Giá -->
+                              <div class="mb-3">
+                                 <label class="form-label">Giá <span class="text-danger">*</span></label>
+                                 <input type="number" name="price" class="form-control" step="0.01" min="0" required />
+                              </div>
+
+                              <!-- số lượng -->
+                              <div class="mb-3">
+                                 <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                 <input type="number" name="stock" class="form-control" step="1" min="0" required />
                               </div>
                            </div>
                         </div>
                      </div>
-                     <!-- card -->
-                     <div class="card mb-6 card-lg">
-                        <!-- card body -->
-                        <div class="card-body p-6">
-                           <h4 class="mb-4 h5">Product Price</h4>
-                           <!-- input -->
-                           <div class="mb-3">
-                              <label class="form-label">Regular Price</label>
-                              <input type="text" class="form-control" placeholder="$0.00" />
-                           </div>
-                           <!-- input -->
-                           <div class="mb-3">
-                              <label class="form-label">Sale Price</label>
-                              <input type="text" class="form-control" placeholder="$0.00" />
-                           </div>
-                        </div>
-                     </div>
-                     <!-- card -->
-                     <div class="card mb-6 card-lg">
-                        <!-- card body -->
-                        <div class="card-body p-6">
-                           <h4 class="mb-4 h5">Meta Data</h4>
-                           <!-- input -->
-                           <div class="mb-3">
-                              <label class="form-label">Meta Title</label>
-                              <input type="text" class="form-control" placeholder="Title" />
-                           </div>
-
-                           <!-- input -->
-                           <div class="mb-3">
-                              <label class="form-label">Meta Description</label>
-                              <textarea class="form-control" rows="3" placeholder="Meta Description"></textarea>
-                           </div>
-                        </div>
-                     </div>
-                     <!-- button -->
-                     <div class="d-grid">
-                        <a href="#" class="btn btn-primary">Create Product</a>
-                     </div>
                   </div>
-               </div>
+               </form>
             </div>
          </main>
       </div>
-    </div>
+   </div>
 
-    <!-- Libs JS -->
-    <!-- <script src="../libs/jquery/dist/jquery.min.js"></script> -->
-    <script src="../libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../libs/simplebar/dist/simplebar.min.js"></script>
+   <!-- Libs JS -->
+   <script src="../libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="../libs/simplebar/dist/simplebar.min.js"></script>
+   <script src="../js/theme.min.js"></script>
+   <script src="../libs/apexcharts/dist/apexcharts.min.js"></script>
+   <script src="../js/vendors/chart.js"></script>
+</body>
 
-    <!-- Theme JS -->
-    <script src="../js/theme.min.js"></script>
-
-    <script src="../libs/apexcharts/dist/apexcharts.min.js"></script>
-    <script src="../js/vendors/chart.js"></script>
-  </body>
-
-  <!-- Mirrored from freshcart.codescandy.com/dashboard/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 14 Nov 2024 06:08:53 GMT -->
 </html>

@@ -10,7 +10,7 @@
             <div class="navbar-vertical-content flex-grow-1" data-simplebar="">
               <ul class="navbar-nav flex-column" id="sideNavbar">
                 <li class="nav-item">
-                  <a class="nav-link active" href="index.html">
+                  <a class="nav-link active" href="index.php">
                     <div class="d-flex align-items-center">
                       <span class="nav-link-icon"
                         ><i class="bi bi-house"></i
@@ -23,7 +23,7 @@
                   <span class="nav-label">Quản lý cửa hàng</span>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="products.html">
+                  <a class="nav-link" href="products.php">
                     <div class="d-flex align-items-center">
                       <span class="nav-link-icon"
                         ><i class="bi bi-cart"></i
@@ -33,7 +33,7 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="categories.html">
+                  <a class="nav-link" href="categories.php">
                     <div class="d-flex align-items-center">
                       <span class="nav-link-icon"
                         ><i class="bi bi-list-task"></i
@@ -43,7 +43,7 @@
                   </a>
                 </li>
                  <li class="nav-item">
-                  <a class="nav-link" href="categories.html">
+                  <a class="nav-link" href="orders.php">
                     <div class="d-flex align-items-center">
                       <span class="nav-link-icon"
                         ><i class="bi bi-bag"></i
@@ -53,7 +53,7 @@
                   </a>
                 </li>
             <li class="nav-item">
-                  <a class="nav-link" href="categories.html">
+                  <a class="nav-link" href="users.php">
                     <div class="d-flex align-items-center">
                       <span class="nav-link-icon"
                         ><i class="bi bi-people"></i
