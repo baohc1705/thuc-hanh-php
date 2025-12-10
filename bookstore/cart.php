@@ -32,6 +32,7 @@ function addToCart($id, $title, $price, $image, $quantity = 1)
         $cart[$id]['quantity'] += $quantity;
     } else {
         $cart[$id] = [
+            'id' => $id,
             'title' => $title,
             'price' => (float)$price,
             'image' => $image,
@@ -141,35 +142,47 @@ $cartStats = getCartTotal();
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
                                     <?php foreach ($cart as $id => $item): ?>
-                                        <div class="d-flex align-items-center mb-4 pb-4 border-bottom">
-                                            <img src="products/<?= htmlspecialchars($item['image']) ?>"
-                                                class="rounded me-4 object-fit-contain" width="50">
-
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1"><?= htmlspecialchars($item['title']) ?></h6>
-                                                <p class="text-muted mb-2"><?= number_format($item['price'], 0, ',', '.') ?> đ</p>
-
-
-                                            </div>
-                                            <div class="d-flex align-items-center me-6">
-                                                <form action="cart.php?action=update&id=<?= $id ?>" method="post" class="d-inline me-3">
-                                                    <div class="input-group" style="width: 140px;">
-                                                        <input type="number" name="quantity" value="<?= $item['quantity'] ?>"
-                                                            min="1" class="form-control form-control-sm" required>
-                                                        <button type="submit" class="btn btn-outline-primary btn-sm">Cập nhật</button>
+                                        <div class="mb-4 pb-4 border-bottom">
+                                            <div class="row w-100 ">
+                                                <div class="col-md-2 text-center">
+                                                    <img src="products/<?= htmlspecialchars($item['image']) ?>"
+                                                        class="rounded me-4 object-fit-contain" width="50">
+                                                </div>
+                                                <div class="col-md-5 text-start">
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1"><?= htmlspecialchars($item['title']) ?></h6>
+                                                        <p class="text-muted mb-2"><?= number_format($item['price'], 0, ',', '.') ?> đ</p>
+                                                        <a href="cart.php?action=remove&id=<?= $id ?>"
+                                                            class="text-danger small" onclick="return confirm('Xóa sản phẩm này khỏi giỏ hàng?')">
+                                                            <i class="bi bi-trash"></i> Xóa
+                                                        </a>
                                                     </div>
-                                                </form>
 
-                                                <a href="cart.php?action=remove&id=<?= $id ?>"
-                                                    class="text-danger small" onclick="return confirm('Xóa sản phẩm này khỏi giỏ hàng?')">
-                                                    <i class="bi bi-trash"></i> Xóa
-                                                </a>
+                                                </div>
+                                                <div class="col-md-2 text-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <form action="cart.php?action=update&id=<?= $id ?>" method="post" class="d-inline me-3">
+                                                            <div class="input-group" style="width: 140px;">
+                                                                <input type="number" name="quantity" value="<?= $item['quantity'] ?>"
+                                                                    min="1" class="form-control form-control-sm" required>
+                                                                <button type="submit" class="btn btn-outline-primary btn-sm">Cập nhật</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 text-end">
+
+                                                    <strong class="fs-5 text-danger">
+                                                        <?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?> đ
+                                                    </strong>
+
+                                                </div>
                                             </div>
-                                            <div class="text-end ms-5">
-                                                <strong class="fs-5 text-danger">
-                                                    <?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?> đ
-                                                </strong>
-                                            </div>
+
+
+
+
+
                                         </div>
                                     <?php endforeach; ?>
 

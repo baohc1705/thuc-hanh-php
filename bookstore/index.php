@@ -121,7 +121,7 @@ try {
                     <img
                       src="images/category/<?= $cate['image'] ?>"
                       alt="<?= $cate['image'] ?>"
-                      class="mb-3 img-fluid" />
+                      class="mb-3 img-fluid object-fit-contain" height="120" width="120"/>
                     <div class="text-truncate"><?= $cate['name'] ?></div>
                   </div>
                 </div>

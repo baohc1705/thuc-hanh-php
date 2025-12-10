@@ -23,6 +23,12 @@
 
  <!-- Theme CSS -->
  <link rel="stylesheet" href="../css/theme.min.css" />
+ <style>
+    .breadcrumb-item+.breadcrumb-item::before {
+        content: ">" !important;
+        color: var(--fc-breadcrumb-divider-color) !important;
+    }
+</style>
  <script
      async
      src="https://www.googletagmanager.com/gtag/js?id=G-M8S4MT3EYG"></script>

@@ -1,5 +1,6 @@
     <?php
     include('config/config.php');
+
     $err = "";
     try {
       $sql = 'SELECT * FROM category c WHERE c.status = 1 ORDER BY c.name';
@@ -22,6 +23,17 @@
     }
     $cartCount = getCartCount();
 
+    $user_session = [];
+
+    if (isset($_SESSION['user_id'])) {
+      $user_session = [
+        'id'       => $_SESSION['user_id'],
+        'username' => $_SESSION['username'],
+        'fullname' => $_SESSION['fullname'],
+        'email'    => $_SESSION['email'],
+        'role'     => $_SESSION['role'],
+      ];
+    }
     ?>
     <!-- navbar -->
     <div class="border-bottom">
@@ -84,34 +96,88 @@
                 </div>
               </form>
             </div>
-            <div class="col-md-2 col-xxl-3 d-none d-lg-block">
+            <div class="col-md-2 col-xxl-1 d-none d-lg-block">
             </div>
-            <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7">
+            <div class="col-lg-4 col-xxl-4 text-end col-md-6 col-7">
               <div class="list-inline">
+                <?php if (!isset($user_session['id'])) : ?>
+                  <!-- Chưa đăng nhập -->
+                  <div class="list-inline-item me-3">
+                    <a href="login.php" class="btn btn-primary">
+                      Đăng nhập
+                    </a>
+                  </div>
 
-                <div class="list-inline-item me-5">
-                  <a
-                    href="#!"
-                    class="text-muted"
-                    data-bs-toggle="modal"
-                    data-bs-target="#userModal">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="feather feather-user">
-                      <path
-                        d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                  </a>
-                </div>
+                  <div class="list-inline-item me-3">
+                    <a href="signup.php" class="btn btn-outline-secondary">
+                      Đăng ký
+                    </a>
+                  </div>
+
+                <?php else: ?>
+                  <!-- Đã đăng nhập: Hiển thị avatar + dropdown -->
+                  <div class="list-inline-item dropdown me-3">
+                    <a
+                      href="#"
+                      class="text-muted dropdown-toggle"
+                      id="userMenu"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="feather feather-user">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userMenu" style="min-width: 230px;">
+
+                      <!-- Header -->
+                      <li class="px-3 py-2">
+                        <div class="d-flex align-items-center">
+                          <div class="me-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                              fill="none" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round" stroke-linejoin="round"
+                              class="feather feather-user text-primary">
+                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                              <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                          </div>
+                          <div>
+                            <div class="fw-bold"><?= htmlspecialchars($user_session['fullname']) ?></div>
+                            <small class="text-muted"><?= htmlspecialchars($user_session['email']) ?></small>
+                          </div>
+                        </div>
+                      </li>
+
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+
+                      <!-- Menu items -->
+                      <li><a class="dropdown-item" href="profile.php">Thông tin cá nhân</a></li>
+                      <li><a class="dropdown-item" href="orders.php">Đơn hàng của tôi</a></li>
+
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+
+                      <li><a class="dropdown-item text-danger" href="logout.php">Đăng xuất</a></li>
+                    </ul>
+
+                  </div>
+                <?php endif; ?>
+
                 <!-- giỏ hàng -->
                 <div class="list-inline-item me-5 me-lg-0">
                   <a
