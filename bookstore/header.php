@@ -1,139 +1,24 @@
+    <?php
+    include('config/config.php');
+    $err = "";
+    try {
+      $sql = 'SELECT * FROM category c WHERE c.status = 1 ORDER BY c.name';
+      $stmt = $pdo->query($sql);
+
+      $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      $err .= $e->getMessage();
+    }
+    ?>
     <!-- navbar -->
     <div class="border-bottom">
       <div class="bg-light py-1">
         <div class="container">
           <div class="row">
             <div class="col-md-6 col-12 text-center text-md-start">
-              <span>Super Value Deals - Save more with coupons</span>
+              <span>Ưu đãi siêu giá trị - Tiết kiệm nhiều hơn với phiếu giảm giá</span>
             </div>
-            <div class="col-6 text-end d-none d-md-block">
-              <div class="dropdown selectBox">
-                <a
-                  class="dropdown-toggle selectValue text-reset"
-                  href="javascript:void(0)"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <span class="me-2">
-                    <svg
-                      width="16"
-                      height="13"
-                      viewBox="0 0 16 13"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <g clip-path="url(#selectedlang)">
-                        <path d="M0 0.5H16V12.5H0V0.5Z" fill="#012169" />
-                        <path
-                          d="M1.875 0.5L7.975 5.025L14.05 0.5H16V2.05L10 6.525L16 10.975V12.5H14L8 8.025L2.025 12.5H0V11L5.975 6.55L0 2.1V0.5H1.875Z"
-                          fill="white"
-                        />
-                        <path
-                          d="M10.6 7.525L16 11.5V12.5L9.225 7.525H10.6ZM6 8.025L6.15 8.9L1.35 12.5H0L6 8.025ZM16 0.5V0.575L9.775 5.275L9.825 4.175L14.75 0.5H16ZM0 0.5L5.975 4.9H4.475L0 1.55V0.5Z"
-                          fill="#C8102E"
-                        />
-                        <path
-                          d="M6.025 0.5V12.5H10.025V0.5H6.025ZM0 4.5V8.5H16V4.5H0Z"
-                          fill="white"
-                        />
-                        <path
-                          d="M0 5.325V7.725H16V5.325H0ZM6.825 0.5V12.5H9.225V0.5H6.825Z"
-                          fill="#C8102E"
-                        />
-                      </g>
-                      <defs>
-                        <clipPath id="selectedlang">
-                          <rect
-                            width="16"
-                            height="12"
-                            fill="white"
-                            transform="translate(0 0.5)"
-                          />
-                        </clipPath>
-                      </defs>
-                    </svg>
-                  </span>
-                  English
-                </a>
 
-                <ul class="dropdown-menu">
-                  <li>
-                    <a class="dropdown-item" href="javascript:void(0)">
-                      <span class="me-2">
-                        <svg
-                          width="16"
-                          height="13"
-                          viewBox="0 0 16 13"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g clip-path="url(#selectedlang)">
-                            <path d="M0 0.5H16V12.5H0V0.5Z" fill="#012169" />
-                            <path
-                              d="M1.875 0.5L7.975 5.025L14.05 0.5H16V2.05L10 6.525L16 10.975V12.5H14L8 8.025L2.025 12.5H0V11L5.975 6.55L0 2.1V0.5H1.875Z"
-                              fill="white"
-                            />
-                            <path
-                              d="M10.6 7.525L16 11.5V12.5L9.225 7.525H10.6ZM6 8.025L6.15 8.9L1.35 12.5H0L6 8.025ZM16 0.5V0.575L9.775 5.275L9.825 4.175L14.75 0.5H16ZM0 0.5L5.975 4.9H4.475L0 1.55V0.5Z"
-                              fill="#C8102E"
-                            />
-                            <path
-                              d="M6.025 0.5V12.5H10.025V0.5H6.025ZM0 4.5V8.5H16V4.5H0Z"
-                              fill="white"
-                            />
-                            <path
-                              d="M0 5.325V7.725H16V5.325H0ZM6.825 0.5V12.5H9.225V0.5H6.825Z"
-                              fill="#C8102E"
-                            />
-                          </g>
-                          <defs>
-                            <clipPath id="selectedlang">
-                              <rect
-                                width="16"
-                                height="12"
-                                fill="white"
-                                transform="translate(0 0.5)"
-                              />
-                            </clipPath>
-                          </defs>
-                        </svg>
-                      </span>
-                      English
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="javascript:void(0)">
-                      <span class="me-2">
-                        <svg
-                          width="16"
-                          height="13"
-                          viewBox="0 0 16 13"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g clip-path="url(#clip0_5543_19751)">
-                            <path d="M0 8.5H16V12.5H0V8.5Z" fill="#FFCE00" />
-                            <path d="M0 0.5H16V4.5H0V0.5Z" fill="black" />
-                            <path d="M0 4.5H16V8.5H0V4.5Z" fill="#DD0000" />
-                          </g>
-                          <defs>
-                            <clipPath id="clip0_5543_19751">
-                              <rect
-                                width="16"
-                                height="12"
-                                fill="white"
-                                transform="translate(0 0.5)"
-                              />
-                            </clipPath>
-                          </defs>
-                        </svg>
-                      </span>
-                      Deutsch
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -141,20 +26,18 @@
         <div class="container">
           <div class="row w-100 align-items-center gx-lg-2 gx-0">
             <div class="col-xxl-2 col-lg-3 col-md-6 col-5">
-              <a class="navbar-brand d-none d-lg-block" href="index.html">
+              <a class="navbar-brand d-none d-lg-block" href="index.php">
                 <img
                   src="images/logo/logo-unibook.svg"
                   alt="eCommerce HTML Template"
-                  height="50"
-                />
+                  height="50" />
               </a>
               <div class="d-flex justify-content-between w-100 d-lg-none">
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand" href="index.php">
                   <img
                     src="images/logo/logo-unibook.svg"
                     alt="eCommerce HTML Template"
-                    height="50"
-                  />
+                    height="50" />
                 </a>
               </div>
             </div>
@@ -164,13 +47,11 @@
                   <input
                     class="form-control rounded"
                     type="search"
-                    placeholder="Search for products"
-                  />
+                    placeholder="Tìm kiếm sản phẩm" />
                   <span class="input-group-append">
                     <button
                       class="btn bg-white border border-start-0 ms-n10 rounded-0 rounded-end"
-                      type="button"
-                    >
+                      type="button">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
@@ -181,8 +62,7 @@
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        class="feather feather-search"
-                      >
+                        class="feather feather-search">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                       </svg>
@@ -192,55 +72,16 @@
               </form>
             </div>
             <div class="col-md-2 col-xxl-3 d-none d-lg-block">
-              <!-- Button trigger modal -->
-              <button
-                type="button"
-                class="btn btn-outline-gray-400 text-muted"
-                data-bs-toggle="modal"
-                data-bs-target="#locationModal"
-              >
-                <i class="feather-icon icon-map-pin me-2"></i>
-                Location
-              </button>
             </div>
             <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7">
               <div class="list-inline">
-                <div class="list-inline-item me-5">
-                  <a
-                    href="pages/shop-wishlist.html"
-                    class="text-muted position-relative"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="feather feather-heart"
-                    >
-                      <path
-                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-                      ></path>
-                    </svg>
-                    <span
-                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-                    >
-                      5
-                      <span class="visually-hidden">unread messages</span>
-                    </span>
-                  </a>
-                </div>
+
                 <div class="list-inline-item me-5">
                   <a
                     href="#!"
                     class="text-muted"
                     data-bs-toggle="modal"
-                    data-bs-target="#userModal"
-                  >
+                    data-bs-target="#userModal">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -251,11 +92,9 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-user"
-                    >
+                      class="feather feather-user">
                       <path
-                        d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
-                      ></path>
+                        d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                       <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                   </a>
@@ -267,8 +106,7 @@
                     data-bs-target="#offcanvasRight"
                     href="#offcanvasExample"
                     role="button"
-                    aria-controls="offcanvasRight"
-                  >
+                    aria-controls="offcanvasRight">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -279,17 +117,14 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-shopping-bag"
-                    >
+                      class="feather feather-shopping-bag">
                       <path
-                        d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"
-                      ></path>
+                        d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                       <line x1="3" y1="6" x2="21" y2="6"></line>
                       <path d="M16 10a4 4 0 0 1-8 0"></path>
                     </svg>
                     <span
-                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-                    >
+                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
                       1
                       <span class="visually-hidden">unread messages</span>
                     </span>
@@ -303,19 +138,16 @@
                     data-bs-toggle="offcanvas"
                     data-bs-target="#navbar-default"
                     aria-controls="navbar-default"
-                    aria-label="Toggle navigation"
-                  >
+                    aria-label="Toggle navigation">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="32"
                       height="32"
                       fill="currentColor"
                       class="bi bi-text-indent-left text-primary"
-                      viewBox="0 0 16 16"
-                    >
+                      viewBox="0 0 16 16">
                       <path
-                        d="M2 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm.646 2.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L4.293 8 2.646 6.354a.5.5 0 0 1 0-.708zM7 6.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm-5 3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"
-                      />
+                        d="M2 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm.646 2.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L4.293 8 2.646 6.354a.5.5 0 0 1 0-.708zM7 6.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm-5 3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
                     </svg>
                   </button>
                 </div>
@@ -327,28 +159,23 @@
 
       <nav
         class="navbar navbar-expand-lg navbar-light navbar-default py-0 pb-lg-4"
-        aria-label="Offcanvas navbar large"
-      >
+        aria-label="Offcanvas navbar large">
         <div class="container">
           <div
             class="offcanvas offcanvas-start"
             tabindex="-1"
             id="navbar-default"
-            aria-labelledby="navbar-defaultLabel"
-          >
+            aria-labelledby="navbar-defaultLabel">
             <div class="offcanvas-header pb-1">
-              <a href="index.html"
-                ><img
+              <a href="index.php"><img
                   src="images/logo/logo-unibook.svg"
                   alt="eCommerce HTML Template"
-                  height="50"
-              /></a>
+                  height="50" /></a>
               <button
                 type="button"
                 class="btn-close"
                 data-bs-dismiss="offcanvas"
-                aria-label="Close"
-              ></button>
+                aria-label="Close"></button>
             </div>
             <div class="offcanvas-body">
               <div class="d-block d-lg-none mb-4">
@@ -357,13 +184,11 @@
                     <input
                       class="form-control rounded"
                       type="search"
-                      placeholder="Search for products"
-                    />
+                      placeholder="Tìm kiếm sản phẩm" />
                     <span class="input-group-append">
                       <button
                         class="btn bg-white border border-start-0 ms-n10 rounded-0 rounded-end"
-                        type="button"
-                      >
+                        type="button">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"
@@ -374,8 +199,7 @@
                           stroke-width="2"
                           stroke-linecap="round"
                           stroke-linejoin="round"
-                          class="feather feather-search"
-                        >
+                          class="feather feather-search">
                           <circle cx="11" cy="11" r="8"></circle>
                           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
@@ -384,15 +208,7 @@
                   </div>
                 </form>
                 <div class="mt-2">
-                  <button
-                    type="button"
-                    class="btn btn-outline-gray-400 text-muted w-100"
-                    data-bs-toggle="modal"
-                    data-bs-target="#locationModal"
-                  >
-                    <i class="feather-icon icon-map-pin me-2"></i>
-                    Pick Location
-                  </button>
+
                 </div>
               </div>
               <div class="d-block d-lg-none mb-4">
@@ -402,8 +218,7 @@
                   href="#collapseExample"
                   role="button"
                   aria-expanded="false"
-                  aria-controls="collapseExample"
-                >
+                  aria-controls="collapseExample">
                   <span class="me-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -415,54 +230,27 @@
                       stroke-width="1.5"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-grid"
-                    >
+                      class="feather feather-grid">
                       <rect x="3" y="3" width="7" height="7"></rect>
                       <rect x="14" y="3" width="7" height="7"></rect>
                       <rect x="14" y="14" width="7" height="7"></rect>
                       <rect x="3" y="14" width="7" height="7"></rect>
                     </svg>
                   </span>
-                  All Departments
+                  Danh mục
                 </a>
                 <div class="collapse mt-2" id="collapseExample">
                   <div class="card card-body">
                     <ul class="mb-0 list-unstyled">
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-grid.html"
-                          >Dairy, Bread & Eggs</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-grid.html"
-                          >Snacks & Munchies</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-grid.html"
-                          >Fruits & Vegetables</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-grid.html"
-                          >Cold Drinks & Juices</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-grid.html"
-                          >Breakfast & Instant Food</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-grid.html"
-                          >Bakery & Biscuits</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-grid.html"
-                          >Chicken, Meat & Fish</a
-                        >
-                      </li>
+                      <?php
+                      foreach ($categories as $cate) {
+                      ?>
+                        <li>
+                          <a class="dropdown-item" href="shop.php?cate=<?= $cate['id']?>"><?= $cate['name'] ?></a>
+                        </li>
+                      <?php
+                      }
+                      ?>
                     </ul>
                   </div>
                 </div>
@@ -473,8 +261,7 @@
                   type="button"
                   id="dropdownMenuButton1"
                   data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
+                  aria-expanded="false">
                   <span class="me-1">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -486,368 +273,36 @@
                       stroke-width="1.2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-grid"
-                    >
+                      class="feather feather-grid">
                       <rect x="3" y="3" width="7" height="7"></rect>
                       <rect x="14" y="3" width="7" height="7"></rect>
                       <rect x="14" y="14" width="7" height="7"></rect>
                       <rect x="3" y="14" width="7" height="7"></rect>
                     </svg>
                   </span>
-                  All Departments
+                  Danh mục
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                  <li>
-                    <a class="dropdown-item" href="pages/shop-grid.html"
-                      >Dairy, Bread & Eggs</a
-                    >
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="pages/shop-grid.html"
-                      >Snacks & Munchies</a
-                    >
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="pages/shop-grid.html"
-                      >Fruits & Vegetables</a
-                    >
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="pages/shop-grid.html"
-                      >Cold Drinks & Juices</a
-                    >
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="pages/shop-grid.html"
-                      >Breakfast & Instant Food</a
-                    >
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="pages/shop-grid.html"
-                      >Bakery & Biscuits</a
-                    >
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="pages/shop-grid.html"
-                      >Chicken, Meat & Fish</a
-                    >
-                  </li>
+                  <?php
+                      foreach ($categories as $cate) {
+                      ?>
+                        <li>
+                          <a class="dropdown-item" href="shop.php?cate=<?= $cate['id']?>"><?= $cate['name'] ?></a>
+                        </li>
+                      <?php
+                      }
+                      ?>
                 </ul>
               </div>
               <div>
                 <ul class="navbar-nav align-items-center">
                   <li class="nav-item w-100 w-lg-auto">
-                    <a
-                      class="nav-link"
-                      >Home</a
-                    >
-                  </li>
-                  <li class="nav-item dropdown w-100 w-lg-auto">
-                    <a
-                      class="nav-link dropdown-toggle"
-                      href="#"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      >Shop</a
-                    >
-                    <ul class="dropdown-menu">
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-grid.html"
-                          >Shop Grid - Filter</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          class="dropdown-item"
-                          href="pages/shop-grid-3-column.html"
-                          >Shop Grid - 3 column</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-list.html"
-                          >Shop List - Filter</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-filter.html"
-                          >Shop - Filter</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          class="dropdown-item"
-                          href="pages/shop-fullwidth.html"
-                          >Shop Wide</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-single.html"
-                          >Shop Single</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-single-2.html"
-                          >Shop Single v2</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-wishlist.html"
-                          >Shop Wishlist</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-cart.html"
-                          >Shop Cart</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/shop-checkout.html"
-                          >Shop Checkout</a
-                        >
-                      </li>
-                    </ul>
-                  </li>
-                 
-                  <li
-                    class="nav-item dropdown w-100 w-lg-auto dropdown-fullwidth"
-                  >
-                    <a
-                      class="nav-link dropdown-toggle"
-                      href="#"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      >Mega menu</a
-                    >
-                    <div class="dropdown-menu pb-0">
-                      <div class="row p-2 p-lg-4">
-                        <div class="col-lg-3 col-12 mb-4 mb-lg-0">
-                          <h6 class="text-primary ps-3">Dairy, Bread & Eggs</h6>
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Butter</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Milk Drinks</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Curd & Yogurt</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Eggs</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Buns & Bakery</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Cheese</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Condensed Milk</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Dairy Products</a
-                          >
-                        </div>
-                        <div class="col-lg-3 col-12 mb-4 mb-lg-0">
-                          <h6 class="text-primary ps-3">
-                            Breakfast & Instant Food
-                          </h6>
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Breakfast Cereal</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Noodles, Pasta & Soup</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Frozen Veg Snacks</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Frozen Non-Veg Snacks</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Vermicelli</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Instant Mixes</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Batter</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Fruit and Juices</a
-                          >
-                        </div>
-                        <div class="col-lg-3 col-12 mb-4 mb-lg-0">
-                          <h6 class="text-primary ps-3">
-                            Cold Drinks & Juices
-                          </h6>
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Soft Drinks</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Fruit Juices</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Coldpress</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Water & Ice Cubes</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Soda & Mixers</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Health Drinks</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Herbal Drinks</a
-                          >
-                          <a class="dropdown-item" href="pages/shop-grid.html"
-                            >Milk Drinks</a
-                          >
-                        </div>
-                        <div class="col-lg-3 col-12 mb-4 mb-lg-0">
-                          <div class="card border-0">
-                            <img
-                              src="images/banner/menu-banner.jpg"
-                              alt="eCommerce HTML Template"
-                              class="img-fluid"
-                            />
-                            <div class="position-absolute ps-6 mt-8">
-                              <h5 class="mb-0">
-                                Dont miss this
-                                <br />
-                                offer today.
-                              </h5>
-                              <a href="#" class="btn btn-primary btn-sm mt-3"
-                                >Shop Now</a
-                              >
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li class="nav-item dropdown w-100 w-lg-auto">
-                    <a
-                      class="nav-link dropdown-toggle"
-                      href="#"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      >Pages</a
-                    >
-                    <ul class="dropdown-menu">
-                      <li>
-                        <a class="dropdown-item" href="pages/blog.html">Blog</a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/blog-single.html"
-                          >Blog Single</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/blog-category.html"
-                          >Blog Category</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/about.html"
-                          >About us</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/404error.html"
-                          >404 Error</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/contact.html"
-                          >Contact</a
-                        >
-                      </li>
-                    </ul>
-                  </li>
-                  <li class="nav-item dropdown w-100 w-lg-auto">
-                    <a
-                      class="nav-link dropdown-toggle"
-                      href="#"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      >Account</a
-                    >
-                    <ul class="dropdown-menu">
-                      <li>
-                        <a class="dropdown-item" href="pages/signin.html"
-                          >Sign in</a
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="pages/signup.html"
-                          >Signup</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          class="dropdown-item"
-                          href="pages/forgot-password.html"
-                          >Forgot Password</a
-                        >
-                      </li>
-                      <li class="dropdown-submenu dropend">
-                        <a
-                          class="dropdown-item dropdown-list-group-item dropdown-toggle"
-                          href="#"
-                          >My Account</a
-                        >
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a
-                              class="dropdown-item"
-                              href="pages/account-orders.html"
-                              >Orders</a
-                            >
-                          </li>
-                          <li>
-                            <a
-                              class="dropdown-item"
-                              href="pages/account-settings.html"
-                              >Settings</a
-                            >
-                          </li>
-                          <li>
-                            <a
-                              class="dropdown-item"
-                              href="pages/account-address.html"
-                              >Address</a
-                            >
-                          </li>
-                          <li>
-                            <a
-                              class="dropdown-item"
-                              href="pages/account-payment-method.html"
-                              >Payment Method</a
-                            >
-                          </li>
-                          <li>
-                            <a
-                              class="dropdown-item"
-                              href="pages/account-notification.html"
-                              >Notification</a
-                            >
-                          </li>
-                        </ul>
-                      </li>
-                    </ul>
+                    <a href="index.php"
+                      class="nav-link">Trang chủ</a>
                   </li>
                   <li class="nav-item w-100 w-lg-auto">
-                    <a class="nav-link" href="dashboard/index.html"
-                      >Dashboard</a
-                    >
+                    <a class="nav-link" href="shop.php?cate=all">Sản phẩm</a>
                   </li>
-                
                 </ul>
               </div>
             </div>
@@ -855,110 +310,25 @@
         </div>
       </nav>
     </div>
-    <!-- Modal -->
-    <div
-      class="modal fade"
-      id="userModal"
-      tabindex="-1"
-      aria-labelledby="userModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-4">
-          <div class="modal-header border-0">
-            <h5 class="modal-title fs-3 fw-bold" id="userModalLabel">
-              Sign Up
-            </h5>
-
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form class="needs-validation" novalidate>
-              <div class="mb-3">
-                <label for="fullName" class="form-label">Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="fullName"
-                  placeholder="Enter Your Name"
-                  required
-                />
-                <div class="invalid-feedback">Please enter name.</div>
-              </div>
-              <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="email"
-                  placeholder="Enter Email address"
-                  required
-                />
-                <div class="invalid-feedback">Please enter email.</div>
-              </div>
-              <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="password"
-                  placeholder="Enter Password"
-                  required
-                />
-                <div class="invalid-feedback">Please enter password.</div>
-                <small class="form-text">
-                  By Signup, you agree to our
-                  <a href="#!">Terms of Service</a>
-                  &
-                  <a href="#!">Privacy Policy</a>
-                </small>
-              </div>
-
-              <button type="submit" class="btn btn-primary" type="submit">
-                Sign Up
-              </button>
-            </form>
-          </div>
-          <div class="modal-footer border-0 justify-content-center">
-            Already have an account?
-            <a href="#">Sign in</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
+  
     <!-- Shop Cart -->
-
     <div
       class="offcanvas offcanvas-end"
       tabindex="-1"
       id="offcanvasRight"
-      aria-labelledby="offcanvasRightLabel"
-    >
+      aria-labelledby="offcanvasRightLabel">
       <div class="offcanvas-header border-bottom">
         <div class="text-start">
-          <h5 id="offcanvasRightLabel" class="mb-0 fs-4">Shop Cart</h5>
-          <small>Location in 382480</small>
+          <h5 id="offcanvasRightLabel" class="mb-0 fs-4">Giỏ hàng</h5>
         </div>
         <button
           type="button"
           class="btn-close text-reset"
           data-bs-dismiss="offcanvas"
-          aria-label="Close"
-        ></button>
+          aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
         <div>
-          <!-- alert -->
-          <div class="alert alert-danger p-2" role="alert">
-            You’ve got FREE delivery. Start
-            <a href="#!" class="alert-link">checkout now!</a>
-          </div>
           <ul class="list-group list-group-flush">
             <!-- list group -->
             <li class="list-group-item py-3 ps-0 border-top">
@@ -969,8 +339,7 @@
                     <img
                       src="products/product-img-1.jpg"
                       alt="Ecommerce"
-                      class="icon-shape icon-xxl"
-                    />
+                      class="icon-shape icon-xxl" />
                     <div class="ms-3">
                       <!-- title -->
                       <a href="pages/shop-single.html" class="text-inherit">
@@ -991,12 +360,10 @@
                               stroke-width="2"
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                              class="feather feather-trash-2 text-success"
-                            >
+                              class="feather feather-trash-2 text-success">
                               <polyline points="3 6 5 6 21 6"></polyline>
                               <path
-                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                              ></path>
+                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                               <line x1="10" y1="11" x2="10" y2="17"></line>
                               <line x1="14" y1="11" x2="14" y2="17"></line>
                             </svg>
@@ -1016,22 +383,19 @@
                       type="button"
                       value="-"
                       class="button-minus btn btn-sm"
-                      data-field="quantity"
-                    />
+                      data-field="quantity" />
                     <input
                       type="number"
                       step="1"
                       max="10"
                       value="1"
                       name="quantity"
-                      class="quantity-field form-control-sm form-input"
-                    />
+                      class="quantity-field form-control-sm form-input" />
                     <input
                       type="button"
                       value="+"
                       class="button-plus btn btn-sm"
-                      data-field="quantity"
-                    />
+                      data-field="quantity" />
                   </div>
                 </div>
                 <!-- price -->
@@ -1049,8 +413,7 @@
                     <img
                       src="products/product-img-2.jpg"
                       alt="Ecommerce"
-                      class="icon-shape icon-xxl"
-                    />
+                      class="icon-shape icon-xxl" />
                     <div class="ms-3">
                       <a href="pages/shop-single.html" class="text-inherit">
                         <h6 class="mb-0">NutriChoice Digestive</h6>
@@ -1070,12 +433,10 @@
                               stroke-width="2"
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                              class="feather feather-trash-2 text-success"
-                            >
+                              class="feather feather-trash-2 text-success">
                               <polyline points="3 6 5 6 21 6"></polyline>
                               <path
-                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                              ></path>
+                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                               <line x1="10" y1="11" x2="10" y2="17"></line>
                               <line x1="14" y1="11" x2="14" y2="17"></line>
                             </svg>
@@ -1096,22 +457,19 @@
                       type="button"
                       value="-"
                       class="button-minus btn btn-sm"
-                      data-field="quantity"
-                    />
+                      data-field="quantity" />
                     <input
                       type="number"
                       step="1"
                       max="10"
                       value="1"
                       name="quantity"
-                      class="quantity-field form-control-sm form-input"
-                    />
+                      class="quantity-field form-control-sm form-input" />
                     <input
                       type="button"
                       value="+"
                       class="button-plus btn btn-sm"
-                      data-field="quantity"
-                    />
+                      data-field="quantity" />
                   </div>
                 </div>
                 <!-- price -->
@@ -1132,8 +490,7 @@
                     <img
                       src="products/product-img-3.jpg"
                       alt="Ecommerce"
-                      class="icon-shape icon-xxl"
-                    />
+                      class="icon-shape icon-xxl" />
                     <div class="ms-3">
                       <!-- title -->
                       <a href="pages/shop-single.html" class="text-inherit">
@@ -1154,12 +511,10 @@
                               stroke-width="2"
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                              class="feather feather-trash-2 text-success"
-                            >
+                              class="feather feather-trash-2 text-success">
                               <polyline points="3 6 5 6 21 6"></polyline>
                               <path
-                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                              ></path>
+                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                               <line x1="10" y1="11" x2="10" y2="17"></line>
                               <line x1="14" y1="11" x2="14" y2="17"></line>
                             </svg>
@@ -1180,22 +535,19 @@
                       type="button"
                       value="-"
                       class="button-minus btn btn-sm"
-                      data-field="quantity"
-                    />
+                      data-field="quantity" />
                     <input
                       type="number"
                       step="1"
                       max="10"
                       value="1"
                       name="quantity"
-                      class="quantity-field form-control-sm form-input"
-                    />
+                      class="quantity-field form-control-sm form-input" />
                     <input
                       type="button"
                       value="+"
                       class="button-plus btn btn-sm"
-                      data-field="quantity"
-                    />
+                      data-field="quantity" />
                   </div>
                 </div>
                 <!-- price -->
@@ -1216,8 +568,7 @@
                     <img
                       src="products/product-img-4.jpg"
                       alt="Ecommerce"
-                      class="icon-shape icon-xxl"
-                    />
+                      class="icon-shape icon-xxl" />
                     <div class="ms-3">
                       <!-- title -->
                       <!-- title -->
@@ -1239,12 +590,10 @@
                               stroke-width="2"
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                              class="feather feather-trash-2 text-success"
-                            >
+                              class="feather feather-trash-2 text-success">
                               <polyline points="3 6 5 6 21 6"></polyline>
                               <path
-                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                              ></path>
+                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                               <line x1="10" y1="11" x2="10" y2="17"></line>
                               <line x1="14" y1="11" x2="14" y2="17"></line>
                             </svg>
@@ -1265,22 +614,19 @@
                       type="button"
                       value="-"
                       class="button-minus btn btn-sm"
-                      data-field="quantity"
-                    />
+                      data-field="quantity" />
                     <input
                       type="number"
                       step="1"
                       max="10"
                       value="1"
                       name="quantity"
-                      class="quantity-field form-control-sm form-input"
-                    />
+                      class="quantity-field form-control-sm form-input" />
                     <input
                       type="button"
                       value="+"
                       class="button-plus btn btn-sm"
-                      data-field="quantity"
-                    />
+                      data-field="quantity" />
                   </div>
                 </div>
                 <!-- price -->
@@ -1301,8 +647,7 @@
                     <img
                       src="products/product-img-5.jpg"
                       alt="Ecommerce"
-                      class="icon-shape icon-xxl"
-                    />
+                      class="icon-shape icon-xxl" />
                     <div class="ms-3">
                       <!-- title -->
                       <a href="pages/shop-single.html" class="text-inherit">
@@ -1323,12 +668,10 @@
                               stroke-width="2"
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                              class="feather feather-trash-2 text-success"
-                            >
+                              class="feather feather-trash-2 text-success">
                               <polyline points="3 6 5 6 21 6"></polyline>
                               <path
-                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                              ></path>
+                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                               <line x1="10" y1="11" x2="10" y2="17"></line>
                               <line x1="14" y1="11" x2="14" y2="17"></line>
                             </svg>
@@ -1349,22 +692,19 @@
                       type="button"
                       value="-"
                       class="button-minus btn btn-sm"
-                      data-field="quantity"
-                    />
+                      data-field="quantity" />
                     <input
                       type="number"
                       step="1"
                       max="10"
                       value="1"
                       name="quantity"
-                      class="quantity-field form-control-sm form-input"
-                    />
+                      class="quantity-field form-control-sm form-input" />
                     <input
                       type="button"
                       value="+"
                       class="button-plus btn btn-sm"
-                      data-field="quantity"
-                    />
+                      data-field="quantity" />
                   </div>
                 </div>
                 <!-- price -->
@@ -1386,125 +726,5 @@
       </div>
     </div>
 
-    <!-- Modal -->
-    <div
-      class="modal fade"
-      id="locationModal"
-      tabindex="-1"
-      aria-labelledby="locationModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-body p-6">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <h5 class="mb-1" id="locationModalLabel">
-                  Choose your Delivery Location
-                </h5>
-                <p class="mb-0 small">
-                  Enter your address and we will specify the offer you area.
-                </p>
-              </div>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="my-5">
-              <input
-                type="search"
-                class="form-control"
-                placeholder="Search your area"
-              />
-            </div>
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="mb-0">Select Location</h6>
-              <a href="#" class="btn btn-outline-gray-400 text-muted btn-sm"
-                >Clear All</a
-              >
-            </div>
-            <div>
-              <div data-simplebar style="height: 300px">
-                <div class="list-group list-group-flush">
-                  <a
-                    href="#"
-                    class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 list-group-item-action active"
-                  >
-                    <span>Alabama</span>
-                    <span>Min:$20</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 list-group-item-action"
-                  >
-                    <span>Alaska</span>
-                    <span>Min:$30</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 list-group-item-action"
-                  >
-                    <span>Arizona</span>
-                    <span>Min:$50</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 list-group-item-action"
-                  >
-                    <span>California</span>
-                    <span>Min:$29</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 list-group-item-action"
-                  >
-                    <span>Colorado</span>
-                    <span>Min:$80</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 list-group-item-action"
-                  >
-                    <span>Florida</span>
-                    <span>Min:$90</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 list-group-item-action"
-                  >
-                    <span>Arizona</span>
-                    <span>Min:$50</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 list-group-item-action"
-                  >
-                    <span>California</span>
-                    <span>Min:$29</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 list-group-item-action"
-                  >
-                    <span>Colorado</span>
-                    <span>Min:$80</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 list-group-item-action"
-                  >
-                    <span>Florida</span>
-                    <span>Min:$90</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    
     <script src="js/vendors/validation.js"></script>

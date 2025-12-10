@@ -6921,10 +6921,11 @@ fieldset:disabled .btn {
 
 .breadcrumb-item+.breadcrumb-item:before {
     color: var(--fc-breadcrumb-divider-color);
-    content: var(--fc-breadcrumb-divider, ">") !important;
+    content: ">" !important;
     float: left;
     padding-right: var(--fc-breadcrumb-item-padding-x)
 }
+
 
 .breadcrumb-item.active {
     color: var(--fc-breadcrumb-item-active-color)

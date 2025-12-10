@@ -1,19 +1,29 @@
 <?php
-$host = 'sql202.infinityfree.com'; // Địa chỉ máy chủ cơ sở dữ liệu
-$dbname = 'if0_40390960_bookstore'; // Tên cơ sở dữ liệu
-$username = 'if0_40390960'; // Tên người dùng
-$password = 'huynhchibao'; // Mật khẩu
+// Kiểm tra đang chạy trên localhost hay hosting
+if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1') {
+    // Cấu hình khi chạy local
+    $host = 'localhost';
+    $dbname = 'bookstore';
+    $username = 'root';
+    $password = '';
+} else {
+    // Cấu hình khi chạy trên hosting InfinityFree
+    $host = 'sql202.infinityfree.com';
+    $dbname = 'if0_40390960_bookstore';
+    $username = 'if0_40390960';
+    $password = 'huynhchibao';
+}
 
 try {
-    // Tạo kết nối PDO
     $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname",
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
         $username,
         $password
     );
-    // Thiết lập chế độ lỗi
+
+    // Chế độ báo lỗi
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    echo "Kết nối thành công!";
+
 } catch (PDOException $e) {
-    echo "Lỗi kết nối: " . $e->getMessage();
+    die("Lỗi kết nối CSDL: " . $e->getMessage());
 }
