@@ -251,7 +251,7 @@ try {
                       <span class="text-danger fw-semibold"><?= number_format($p['price'], 0, ',', '.') ?> đ</span>
                     </div>
                     <div>
-                      <a href="#!" class="btn btn-primary btn-sm">
+                      <a href="cart.php?action=add&id=<?= $p['id'] ?>&title=<?= urlencode($p['title']) ?>&price=<?= $p['price'] ?>&image=<?= $p['image'] ?>" class="btn btn-primary btn-sm">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"

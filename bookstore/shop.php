@@ -235,7 +235,7 @@ if (isset($_GET['cate'])) {
                                     <div class="text-small mb-1">
                                        <small><?= htmlspecialchars($p['category_name'] ?? '') ?></small>
                                     </div>
-                                    <h2 class="fs-6"><?= htmlspecialchars($p['name'] ?? $p['title'] ?? '') ?></h2>
+                                    <h2 class="fs-6"><?= htmlspecialchars($p['title'] ?? '') ?></h2>
 
                                     <!-- price -->
                                     <div class="d-flex justify-content-between align-items-center mt-3">
@@ -247,7 +247,7 @@ if (isset($_GET['cate'])) {
 
                                        <!-- btn -->
                                        <div>
-                                          <a href="product-detail.php?id=<?= (int)$p['id'] ?>" class="btn btn-primary btn-sm">
+                                          <a href="cart.php?action=add&id=<?= $p['id'] ?>&title=<?= urlencode($p['title']) ?>&price=<?= $p['price'] ?>&image=<?= $p['image'] ?>" class="btn btn-primary btn-sm">
                                              <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 width="16"
