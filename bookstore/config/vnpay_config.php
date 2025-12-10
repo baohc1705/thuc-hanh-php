@@ -7,7 +7,7 @@ return [
     'vnp_HashSecret' => '5ECX8H6CE0I35756JVLOJXJ48LI8UJTY',
     'vnp_Url'        => 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
     'vnp_ReturnUrl'  => $is_local 
-        ? 'http://localhost/thuc-hanh-php/bookstore/vnpay_callback.php'
-        : 'https://huynhchibao.42web.io/bookstore/vnpay_callback.php',
+        ? 'http://localhost/thuc-hanh-php/bookstore/vnpay_return.php'
+        : 'https://huynhchibao.42web.io/bookstore/vnpay_return.php',
 ];
 ?>
