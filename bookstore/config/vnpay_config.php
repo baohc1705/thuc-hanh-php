@@ -3,12 +3,12 @@
 if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1') {
 
     // Đường dẫn LOCAL 
-    $vnp_return = 'http://localhost/thuc-hanh-php/bookstore/vnpay_return.php';
+    $vnp_return = 'http://localhost/thuc-hanh-php/bookstore/unibook_vnpay_return.php';
 
 } else {
 
     // Đường dẫn HOSTING
-    $vnp_return = 'https://huynhchibao.42web.io/bookstore/vnpay_return.php';
+    $vnp_return = 'https://huynhchibao.42web.io/bookstore/unibook_vnpay_return.php';
 }
 
 return [
