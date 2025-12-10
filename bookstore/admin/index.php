@@ -1,3 +1,9 @@
+<?php 
+include('../config/_admin-auth.php');
+include('../config/config.php');
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <!-- Mirrored from freshcart.codescandy.com/dashboard/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 14 Nov 2024 06:08:49 GMT -->

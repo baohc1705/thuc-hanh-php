@@ -1,5 +1,6 @@
 <?php
 include('config/config.php');
+session_start();
 
 define('CART_COOKIE_NAME', 'unibook_cart');
 define('CART_COOKIE_EXPIRE', time() + (30 * 24 * 60 * 60)); // 30 ngày

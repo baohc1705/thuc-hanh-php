@@ -1,8 +1,12 @@
 <?php
+include('../config/_admin-auth.php');
 include('../config/config.php');
+session_start();
 
 $orders = [];
 $err = '';
+$filter_status = isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : '';
+$search_q = isset($_GET['q']) && !empty($_GET['q']) ? trim($_GET['q']) : '';
 
 try {
     $sql = "SELECT o.*, u.fullname, u.email,
@@ -18,20 +22,48 @@ try {
                 WHEN o.status = 'delivered' THEN 'Đã giao'
                 WHEN o.status = 'cancelled' THEN 'Đã hủy'
                 ELSE o.status
-            END as status_name,
-            (SELECT GROUP_CONCAT(p.title SEPARATOR ', ') 
-             FROM order_detail od 
-             JOIN product p ON od.product_id = p.id 
-             WHERE od.order_id = o.id LIMIT 1) as first_product_image
+            END as status_name
             FROM orders o
             JOIN users u ON o.user_id = u.id
-            ORDER BY o.created_at DESC";
+            WHERE 1=1";
+    
+    $params = [];
 
-    $stmt = $pdo->query($sql);
+    // Lọc theo trạng thái
+    if (!empty($filter_status)) {
+        $sql .= " AND o.status = ?";
+        $params[] = $filter_status;
+    }
+
+    // Tìm kiếm theo mã đơn hoặc tên khách
+    if (!empty($search_q)) {
+        $sql .= " AND (o.id LIKE ? OR u.fullname LIKE ? OR u.email LIKE ? OR o.recipient LIKE ?)";
+        $search_param = '%' . $search_q . '%';
+        $params[] = $search_param;
+        $params[] = $search_param;
+        $params[] = $search_param;
+        $params[] = $search_param;
+    }
+
+    $sql .= " ORDER BY o.created_at DESC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (PDOException $e) {
     $err = $e->getMessage();
 }
+
+// Map status để hiển thị
+$status_options = [
+    '' => 'Tất cả trạng thái',
+    'pending' => 'Chờ xử lý',
+    'confirmed' => 'Đã xác nhận',
+    'shipping' => 'Đang giao',
+    'delivered' => 'Đã giao',
+    'cancelled' => 'Đã hủy'
+];
 ?>
 
 <!DOCTYPE html>
@@ -79,30 +111,70 @@ try {
                             <!-- card -->
                             <div class="card h-100 card-lg">
                                 <div class="p-6">
-                                    <div class="row justify-content-between">
-                                        <div class="col-md-4 col-12 mb-2 mb-md-0">
-                                            <!-- form -->
-                                            <form class="d-flex" role="search">
-                                                <input class="form-control" type="search" placeholder="Tìm kiếm đơn hàng" aria-label="Search" />
-                                            </form>
+                                    <form method="GET" action="" class="row g-3 justify-content-between">
+                                        <div class="col-md-5 col-12">
+                                            <!-- Tìm kiếm -->
+                                            <div class="input-group">
+                                                <input 
+                                                    class="form-control" 
+                                                    type="search" 
+                                                    name="q"
+                                                    placeholder="Tìm mã đơn, tên khách hàng, email..." 
+                                                    value="<?= htmlspecialchars($search_q) ?>"
+                                                    aria-label="Search" 
+                                                />
+                                                <button class="btn btn-outline-secondary" type="submit">
+                                                    <i class="bi bi-search"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="col-lg-2 col-md-4 col-12">
-                                            <!-- select -->
-                                            <select class="form-select">
-                                                <option selected>Trạng thái</option>
-                                                <option value="pending">Chờ xử lý</option>
-                                                <option value="confirmed">Đã xác nhận</option>
-                                                <option value="shipping">Đang giao</option>
-                                                <option value="delivered">Đã giao</option>
-                                                <option value="cancelled">Đã hủy</option>
+                                        <div class="col-md-4 col-12">
+                                            <!-- Lọc trạng thái -->
+                                            <select name="status" class="form-select" onchange="this.form.submit()">
+                                                <?php foreach ($status_options as $val => $label): ?>
+                                                    <option value="<?= htmlspecialchars($val) ?>" <?= $filter_status === $val ? 'selected' : '' ?>>
+                                                        <?= htmlspecialchars($label) ?>
+                                                    </option>
+                                                <?php endforeach; ?>
                                             </select>
                                         </div>
-                                    </div>
+                                        <div class="col-md-3 col-12 d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary flex-grow-1">
+                                                <i class="bi bi-funnel me-2"></i>Lọc
+                                            </button>
+                                            <a href="orders.php" class="btn btn-outline-secondary">
+                                                <i class="bi bi-x-circle"></i>
+                                            </a>
+                                        </div>
+                                    </form>
                                 </div>
+
                                 <!-- card body -->
                                 <div class="card-body p-0">
                                     <?php if (!empty($err)): ?>
                                         <div class="alert alert-danger m-4"><?= htmlspecialchars($err) ?></div>
+                                    <?php endif; ?>
+
+                                    <!-- Hiển thị filter đang áp dụng -->
+                                    <?php if (!empty($filter_status) || !empty($search_q)): ?>
+                                        <div class="p-4 bg-light border-bottom">
+                                            <p class="mb-2 small"><strong>Bộ lọc hiện tại:</strong></p>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <?php if (!empty($filter_status)): ?>
+                                                    <span class="badge bg-primary">
+                                                        Trạng thái: <?= htmlspecialchars($status_options[$filter_status]) ?>
+                                                        <a href="?q=<?= urlencode($search_q) ?>" class="text-white ms-2 text-decoration-none">×</a>
+                                                    </span>
+                                                <?php endif; ?>
+                                                <?php if (!empty($search_q)): ?>
+                                                    <span class="badge bg-info">
+                                                        Tìm: "<?= htmlspecialchars($search_q) ?>"
+                                                        <a href="?status=<?= urlencode($filter_status) ?>" class="text-white ms-2 text-decoration-none">×</a>
+                                                    </span>
+                                                <?php endif; ?>
+                                                <a href="orders.php" class="btn btn-sm btn-outline-secondary">Xóa tất cả</a>
+                                            </div>
+                                        </div>
                                     <?php endif; ?>
 
                                     <!-- table responsive -->
@@ -112,7 +184,6 @@ try {
                                                 <tr>
                                                     <th>Mã đơn hàng</th>
                                                     <th>Khách hàng</th>
-                                                    <th>Email</th>
                                                     <th>Ngày đặt</th>
                                                     <th>Phương thức TT</th>
                                                     <th>Trạng thái</th>
@@ -123,8 +194,14 @@ try {
                                             <tbody>
                                                 <?php if (empty($orders)): ?>
                                                     <tr>
-                                                        <td colspan="8" class="text-center py-5">
-                                                            <p class="text-muted">Chưa có đơn hàng nào</p>
+                                                        <td colspan="7" class="text-center py-5">
+                                                            <p class="text-muted">
+                                                                <?php if (!empty($search_q) || !empty($filter_status)): ?>
+                                                                    Không tìm thấy đơn hàng nào với bộ lọc hiện tại
+                                                                <?php else: ?>
+                                                                    Chưa có đơn hàng nào
+                                                                <?php endif; ?>
+                                                            </p>
                                                         </td>
                                                     </tr>
                                                 <?php else: ?>
@@ -136,15 +213,15 @@ try {
                                                                 </a>
                                                             </td>
                                                             <td>
-                                                                <span><?= htmlspecialchars($order['fullname']) ?></span>
-                                                            </td>
-                                                            <td>
-                                                                <span class="text-muted"><?= htmlspecialchars($order['email']) ?></span>
+                                                                <div>
+                                                                    <p class="mb-1"><?= htmlspecialchars($order['fullname']) ?></p>
+                                                                    <p class="text-muted small mb-0"><?= htmlspecialchars($order['email']) ?></p>
+                                                                </div>
                                                             </td>
                                                             <td>
                                                                 <?= date('d/m/Y H:i', strtotime($order['created_at'])) ?>
                                                             </td>
-                                                            <td>
+                                                            <td class="small">
                                                                 <?= htmlspecialchars($order['payment_name']) ?>
                                                             </td>
                                                             <td>
@@ -189,7 +266,7 @@ try {
                                                                             <hr class="dropdown-divider">
                                                                         </li>
                                                                         <li>
-                                                                            <a class="dropdown-item text-danger" href="delete-order.php?id=<?= $order['id'] ?>">
+                                                                            <a class="dropdown-item text-danger" href="delete-order.php?id=<?= $order['id'] ?>" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
                                                                                 <i class="bi bi-trash me-3"></i>
                                                                                 Xóa
                                                                             </a>
@@ -206,22 +283,6 @@ try {
                                 </div>
                                 <div class="border-top d-md-flex justify-content-between align-items-center p-6">
                                     <span>Tổng cộng: <strong><?= count($orders) ?></strong> đơn hàng</span>
-                                    <nav class="mt-2 mt-md-0">
-                                        <ul class="pagination mb-0">
-                                            <li class="page-item disabled">
-                                                <a class="page-link" href="#!">Trước</a>
-                                            </li>
-                                            <li class="page-item active">
-                                                <a class="page-link" href="#!">1</a>
-                                            </li>
-                                            <li class="page-item">
-                                                <a class="page-link" href="#!">2</a>
-                                            </li>
-                                            <li class="page-item">
-                                                <a class="page-link" href="#!">Sau</a>
-                                            </li>
-                                        </ul>
-                                    </nav>
                                 </div>
                             </div>
                         </div>

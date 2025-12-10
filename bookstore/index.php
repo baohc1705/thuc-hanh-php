@@ -1,5 +1,6 @@
 <?php
 include('config/config.php');
+session_start();
 $err = "";
 try {
   $sql = 'SELECT * FROM category c WHERE c.status = 1 ORDER BY c.name';

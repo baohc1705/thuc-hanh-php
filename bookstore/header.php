@@ -166,7 +166,7 @@
 
                       <!-- Menu items -->
                       <li><a class="dropdown-item" href="profile.php">Thông tin cá nhân</a></li>
-                      <li><a class="dropdown-item" href="orders.php">Đơn hàng của tôi</a></li>
+                      <li><a class="dropdown-item" href="order-list.php">Đơn hàng của tôi</a></li>
 
                       <li>
                         <hr class="dropdown-divider">

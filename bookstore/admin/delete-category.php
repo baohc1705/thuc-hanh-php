@@ -1,5 +1,7 @@
 <?php
-include("../config/config.php");
+include('../config/_admin-auth.php');
+include('../config/config.php');
+session_start();
 
 $id = $_GET['id'] ?? 0;
 $action = $_GET['action'] ?? '';

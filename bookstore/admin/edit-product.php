@@ -1,5 +1,7 @@
 <?php
+include('../config/_admin-auth.php');
 include('../config/config.php');
+session_start();
 
 $categories = [];
 $err = "";

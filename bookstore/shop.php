@@ -1,6 +1,6 @@
 <?php
 include('config/config.php');
-
+session_start();
 function buildUrl($params = [])
 {
    $url = $_SERVER['REQUEST_URI'];

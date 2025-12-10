@@ -43,16 +43,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $pdo->beginTransaction();
 
-                $sql = "INSERT INTO orders (user_id, total_price, recipient, phone, address, note, status, payment_method, created_at) 
-                        VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, NOW())";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([$_SESSION['user_id'], $cartStats['total'], $recipient, $phone, $address, $note, $payment]);
+                // Tạo mã đơn hàng dạng chuỗi thời gian + 4 số random
+                $order_id = date('YmdHis') . rand(1000, 9999);
 
-                $order_id = $pdo->lastInsertId();
+                $sql = "INSERT INTO orders (id, user_id, total_price, recipient, phone, address, note, status, payment_status, payment_method, created_at) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?,'unpaid', 'pending', ?, NOW())";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$order_id, $_SESSION['user_id'], $cartStats['total'], $recipient, $phone, $address, $note, $payment]);
+
+                //$order_id = $pdo->lastInsertId();
 
                 $sqlDetail = "INSERT INTO order_detail (order_id, product_id, quantity, price, total) VALUES (?, ?, ?, ?, ?)";
                 $stmtDetail = $pdo->prepare($sqlDetail);
-                
+
                 foreach ($cart as $item) {
                     $stmtDetail->execute([$order_id, $item['id'], $item['quantity'], $item['price'], $item['price'] * $item['quantity']]);
                 }
