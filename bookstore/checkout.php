@@ -50,11 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $status = ($payment === 'cod') ? 'pending' : 'pending';
                 $payment_status = ($payment === 'cod') ? 'unpaid' : 'unpaid';
-
+                $date_now = date('Y-m-d H:i:s');
                 $sql = "INSERT INTO orders 
                         (id, user_id, total_price, recipient, phone, address, note, 
                          status, payment_status, payment_method, created_at) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
                     $order_id,
@@ -66,7 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $note,
                     $status,
                     $payment_status,
-                    $payment
+                    $payment,
+                    $date_now
                 ]);
 
 

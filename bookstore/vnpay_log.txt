@@ -1,1 +1,11 @@
 
+2025-12-11 09:56:59 | URL: /thuc-hanh-php/bookstore/vnpay_return.php?vnp_Amount=2900000&vnp_BankCode=NCB&vnp_CardType=ATM&vnp_OrderInfo=Thanh+to%C3%A1n+%C4%91%C6%A1n+h%C3%A0ng+UniBook+%23202512110956219879&vnp_PayDate=20251211095656&vnp_ResponseCode=24&vnp_TmnCode=Q21B8B0O&vnp_TransactionNo=15334078&vnp_TransactionStatus=02&vnp_TxnRef=202512110956219879&vnp_SecureHash=50deca1e089d8c5e9617074e69ee9f8b1052afcbd15182c7d831774fd20d3b19269ea12e491da05f3a4ade351b35a4c56f9357b999938cc433ee5a0c2e39d1c7
+GET: {"vnp_Amount":"2900000","vnp_BankCode":"NCB","vnp_CardType":"ATM","vnp_OrderInfo":"Thanh to\u00e1n \u0111\u01a1n h\u00e0ng UniBook #202512110956219879","vnp_PayDate":"20251211095656","vnp_ResponseCode":"24","vnp_TmnCode":"Q21B8B0O","vnp_TransactionNo":"15334078","vnp_TransactionStatus":"02","vnp_TxnRef":"202512110956219879","vnp_SecureHash":"50deca1e089d8c5e9617074e69ee9f8b1052afcbd15182c7d831774fd20d3b19269ea12e491da05f3a4ade351b35a4c56f9357b999938cc433ee5a0c2e39d1c7"}
+---
+OrderID: 202512110956219879 | ResponseCode: 24 | TransNo: 15334078
+ExpectedHash: 50deca1e089d8c5e9617074e69ee9f8b1052afcbd15182c7d831774fd20d3b19269ea12e491da05f3a4ade351b35a4c56f9357b999938cc433ee5a0c2e39d1c7
+ReceivedHash: 50deca1e089d8c5e9617074e69ee9f8b1052afcbd15182c7d831774fd20d3b19269ea12e491da05f3a4ade351b35a4c56f9357b999938cc433ee5a0c2e39d1c7
+Match: YES
+---
+Payment failed. ResponseCode: 24
+---
