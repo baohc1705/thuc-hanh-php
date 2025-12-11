@@ -59,6 +59,52 @@ if ($secureHash === $vnp_SecureHash) {
         try {
             $pdo->beginTransaction();
 
+            // Nếu đơn chưa tồn tại (do chỉ tạo sau khi thanh toán thành công), tạo từ session pending
+            $stmtCheck = $pdo->prepare("SELECT id FROM orders WHERE id = ? LIMIT 1");
+            $stmtCheck->execute([$orderId]);
+            $orderExists = $stmtCheck->fetchColumn();
+
+            if (!$orderExists) {
+                $pending = $_SESSION['pending_vnpay_order'] ?? null;
+                if (!$pending || ($pending['order_id'] ?? '') !== $orderId) {
+                    throw new Exception("Không tìm thấy dữ liệu đơn hàng tạm để lưu sau khi thanh toán");
+                }
+
+                // Tạo đơn hàng mới
+                $sqlInsert = "INSERT INTO orders 
+                    (id, user_id, total_price, recipient, phone, address, note, 
+                     status, payment_status, payment_method, created_at) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $stmtInsert = $pdo->prepare($sqlInsert);
+                $stmtInsert->execute([
+                    $pending['order_id'],
+                    $pending['user_id'],
+                    $pending['total_price'],
+                    $pending['recipient'],
+                    $pending['phone'],
+                    $pending['address'],
+                    $pending['note'],
+                    'pending',
+                    'unpaid',
+                    'vnpay',
+                    $pending['created_at'],
+                ]);
+
+                // Lưu chi tiết đơn hàng
+                $sqlDetail = "INSERT INTO order_detail (order_id, product_id, quantity, price, total) 
+                              VALUES (?, ?, ?, ?, ?)";
+                $stmtDetail = $pdo->prepare($sqlDetail);
+                foreach ($pending['cart_items'] as $item) {
+                    $stmtDetail->execute([
+                        $pending['order_id'],
+                        $item['id'],
+                        $item['quantity'],
+                        $item['price'],
+                        $item['price'] * $item['quantity']
+                    ]);
+                }
+            }
+
             // Cập nhật trạng thái đơn hàng
             $stmt = $pdo->prepare("UPDATE orders 
                 SET status = 'confirmed', payment_status = 'paid'
@@ -68,10 +114,12 @@ if ($secureHash === $vnp_SecureHash) {
             if ($result && $stmt->rowCount() > 0) {
                 // Xóa giỏ hàng
                 setcookie('unibook_cart', '', time() - 3600, '/');
+                // Xóa đơn tạm
+                unset($_SESSION['pending_vnpay_order']);
                 $pdo->commit();
 
                 file_put_contents(__DIR__ . "/vnpay_log.txt",
-                    "Order $orderId updated successfully\n---\n",
+                    "Order $orderId created/updated successfully\n---\n",
                     FILE_APPEND
                 );
 
@@ -96,7 +144,7 @@ if ($secureHash === $vnp_SecureHash) {
             "Payment failed. ResponseCode: $responseCode\n---\n",
             FILE_APPEND
         );
-        header("Location: order-fail.php?order_id=$orderId&error=payment_failed");
+        header("Location: order-fail.php?order_id=$orderId&error=payment_failed&vnp_code=$responseCode");
         exit;
     }
 } else {

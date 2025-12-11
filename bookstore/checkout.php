@@ -43,59 +43,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         elseif (empty($address)) $err = "Vui lòng nhập địa chỉ giao hàng";
         else {
             try {
-                $pdo->beginTransaction();
-
                 // Tạo mã đơn hàng dạng chuỗi thời gian + 4 số random
                 $order_id = date('YmdHis') . rand(1000, 9999);
-
-                $status = ($payment === 'cod') ? 'pending' : 'pending';
-                $payment_status = ($payment === 'cod') ? 'unpaid' : 'unpaid';
                 $date_now = date('Y-m-d H:i:s');
-                $sql = "INSERT INTO orders 
-                        (id, user_id, total_price, recipient, phone, address, note, 
-                         status, payment_status, payment_method, created_at) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([
-                    $order_id,
-                    $_SESSION['user_id'],
-                    $cartStats['total'],
-                    $recipient,
-                    $phone,
-                    $address,
-                    $note,
-                    $status,
-                    $payment_status,
-                    $payment,
-                    $date_now
-                ]);
 
-
-
-                // Insert chi tiết đơn hàng
-                $sqlDetail = "INSERT INTO order_detail (order_id, product_id, quantity, price, total) 
-                              VALUES (?, ?, ?, ?, ?)";
-                $stmtDetail = $pdo->prepare($sqlDetail);
-                foreach ($cart as $item) {
-                    $stmtDetail->execute([
-                        $order_id,
-                        $item['id'],
-                        $item['quantity'],
-                        $item['price'],
-                        $item['price'] * $item['quantity']
-                    ]);
-                }
-
-                $pdo->commit();
-
-                // === XỬ LÝ THANH TOÁN ===
                 if ($payment === 'cod') {
-                    // COD → xóa giỏ và chuyển sang trang thành công
+                    // Lưu đơn COD ngay vào DB
+                    $pdo->beginTransaction();
+
+                    $status = 'pending';
+                    $payment_status = 'unpaid';
+                    $sql = "INSERT INTO orders 
+                            (id, user_id, total_price, recipient, phone, address, note, 
+                             status, payment_status, payment_method, created_at) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([
+                        $order_id,
+                        $_SESSION['user_id'],
+                        $cartStats['total'],
+                        $recipient,
+                        $phone,
+                        $address,
+                        $note,
+                        $status,
+                        $payment_status,
+                        $payment,
+                        $date_now
+                    ]);
+
+                    // Insert chi tiết đơn hàng
+                    $sqlDetail = "INSERT INTO order_detail (order_id, product_id, quantity, price, total) 
+                                  VALUES (?, ?, ?, ?, ?)";
+                    $stmtDetail = $pdo->prepare($sqlDetail);
+                    foreach ($cart as $item) {
+                        $stmtDetail->execute([
+                            $order_id,
+                            $item['id'],
+                            $item['quantity'],
+                            $item['price'],
+                            $item['price'] * $item['quantity']
+                        ]);
+                    }
+
+                    $pdo->commit();
+
+                    // Xóa giỏ và chuyển sang trang thành công
                     setcookie('unibook_cart', '', time() - 3600, '/');
                     header("Location: order-success.php?order_id=$order_id");
                     exit;
                 } else {
-                    // VNPAY → tạo URL thanh toán
+                    // VNPAY: chưa lưu DB, chỉ lưu tạm vào session
+                    $_SESSION['pending_vnpay_order'] = [
+                        'order_id'       => $order_id,
+                        'user_id'        => $_SESSION['user_id'],
+                        'total_price'    => $cartStats['total'],
+                        'recipient'      => $recipient,
+                        'phone'          => $phone,
+                        'address'        => $address,
+                        'note'           => $note,
+                        'status'         => 'pending',
+                        'payment_status' => 'unpaid',
+                        'payment_method' => 'vnpay',
+                        'created_at'     => $date_now,
+                        'cart_items'     => $cart,
+                    ];
+
+                    // Tạo URL thanh toán VNPAY
                     $vnp_TxnRef = $order_id;
                     $vnp_OrderInfo = "Thanh toán đơn hàng UniBook #$order_id";
                     $vnp_OrderType = 'billpayment';
@@ -138,7 +152,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
             } catch (Exception $e) {
-                $pdo->rollBack();
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
                 $err = "Đặt hàng thất bại, vui lòng thử lại!";
             }
         }

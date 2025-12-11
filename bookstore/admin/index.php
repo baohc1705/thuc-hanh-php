@@ -2,70 +2,98 @@
 include('../config/_admin-auth.php');
 include('../config/config.php');
 session_start();
+
+// Tổng quan
+$totalRevenue = 0;
+$totalOrders = 0;
+$totalCustomers = 0;
+
+// Doanh thu theo tháng (6 tháng gần nhất)
+$revenueLabels = [];
+$revenueData = [];
+
+// Top 5 danh mục bán chạy
+$topCateLabels = [];
+$topCateData = [];
+
+// 5 đơn hàng mới nhất
+$latestOrders = [];
+
+try {
+  // Tổng doanh thu (chỉ tính đã thanh toán)
+  $stmt = $pdo->query("SELECT COALESCE(SUM(total_price),0) FROM orders WHERE payment_status = 'paid'");
+  $totalRevenue = (float)$stmt->fetchColumn();
+
+  // Tổng số đơn
+  $stmt = $pdo->query("SELECT COUNT(*) FROM orders");
+  $totalOrders = (int)$stmt->fetchColumn();
+
+  // Tổng khách hàng
+  $stmt = $pdo->query("SELECT COUNT(*) FROM users");
+  $totalCustomers = (int)$stmt->fetchColumn();
+
+  // Doanh thu 6 tháng gần nhất
+  $stmt = $pdo->query("
+    SELECT DATE_FORMAT(created_at, '%m/%Y') AS label,
+           DATE_FORMAT(created_at, '%Y-%m') AS ym,
+           SUM(total_price) AS total
+    FROM orders
+    WHERE payment_status = 'paid'
+      AND created_at >= DATE_SUB(CURDATE(), INTERVAL 5 MONTH)
+    GROUP BY ym
+    ORDER BY ym ASC
+  ");
+  $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($rows as $row) {
+    $revenueLabels[] = $row['label'];
+    $revenueData[] = (float)$row['total'];
+  }
+
+  // Top 5 category bán chạy nhất (theo tổng quantity)
+  $stmt = $pdo->query("
+    SELECT c.name, SUM(od.quantity) AS qty
+    FROM order_detail od
+    JOIN product p ON od.product_id = p.id
+    JOIN category c ON p.category_id = c.id
+    JOIN orders o ON od.order_id = o.id
+    WHERE o.payment_status = 'paid'
+    GROUP BY c.id, c.name
+    ORDER BY qty DESC
+    LIMIT 5
+  ");
+  $cates = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($cates as $c) {
+    $topCateLabels[] = $c['name'];
+    $topCateData[] = (int)$c['qty'];
+  }
+
+  // 5 đơn mới nhất
+  $stmt = $pdo->query("
+    SELECT id, recipient, total_price, status, payment_status, created_at
+    FROM orders
+    ORDER BY created_at DESC
+    LIMIT 5
+  ");
+  $latestOrders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+  // không hiển thị lỗi chi tiết ra UI dashboard
+}
+
+$statusClass = [
+  'pending'   => ['label' => 'Chờ xử lý', 'class' => 'bg-light-warning text-dark-warning'],
+  'confirmed' => ['label' => 'Đã xác nhận', 'class' => 'bg-light-primary text-dark-primary'],
+  'shipping'  => ['label' => 'Đang giao', 'class' => 'bg-light-info text-dark-info'],
+  'delivered' => ['label' => 'Đã giao', 'class' => 'bg-light-success text-dark-success'],
+  'cancelled' => ['label' => 'Đã hủy', 'class' => 'bg-light-danger text-dark-danger'],
+];
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
   <!-- Mirrored from freshcart.codescandy.com/dashboard/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 14 Nov 2024 06:08:49 GMT -->
   <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta content="Codescandy" name="author" />
-    <title>Dashboard eCommerce HTML Template - FreshCart</title>
-    <!-- Favicon icon-->
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="../images/favicon/favicon.ico"
-    />
-
-    <!-- Libs CSS -->
-    <link
-      href="../libs/bootstrap-icons/font/bootstrap-icons.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="../libs/feather-webfont/dist/feather-icons.css"
-      rel="stylesheet"
-    />
-    <link
-      href="../libs/simplebar/dist/simplebar.min.css"
-      rel="stylesheet"
-    />
-
-    <!-- Theme CSS -->
-    <link rel="stylesheet" href="../css/theme.min.css" />
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-M8S4MT3EYG"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-M8S4MT3EYG");
-    </script>
-    <script type="text/javascript">
-      (function (c, l, a, r, i, t, y) {
-        c[a] =
-          c[a] ||
-          function () {
-            (c[a].q = c[a].q || []).push(arguments);
-          };
-        t = l.createElement(r);
-        t.async = 1;
-        t.src = "https://www.clarity.ms/tag/" + i;
-        y = l.getElementsByTagName(r)[0];
-        y.parentNode.insertBefore(t, y);
-      })(window, document, "clarity", "script", "kuc8w5o9nt");
-    </script>
+    <title>Dashboard - UniBook</title>
+    <?php include('include/lib.php'); ?>
   </head>
 
   <body>
@@ -81,30 +109,7 @@ session_start();
         <!-- main wrapper -->
         <main class="main-content-wrapper">
           <section class="container">
-            <!-- row -->
-            <div class="row mb-8">
-              <div class="col-md-12">
-                <!-- card -->
-                <div
-                  class="card bg-light border-0 rounded-4"
-                  style="
-                    background-image: url(../images/slider/slider-image-1.jpg);
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-position: right;
-                  "
-                >
-                  <div class="card-body p-lg-12">
-                    <h1>Welcome back! FreshCart</h1>
-                    <p>
-                      FreshCart is simple & clean design for developer and
-                      designer.
-                    </p>
-                    <a href="#" class="btn btn-primary">Create Product</a>
-                  </div>
-                </div>
-              </div>
-            </div>
+           
             <!-- table -->
             <div class="table-responsive-xl mb-6 mb-lg-0">
               <div class="row flex-nowrap pb-3 pb-lg-0">
@@ -118,7 +123,7 @@ session_start();
                         class="d-flex justify-content-between align-items-center mb-6"
                       >
                         <div>
-                          <h4 class="mb-0 fs-5">Earnings</h4>
+                          <h4 class="mb-0 fs-5">Doanh thu</h4>
                         </div>
                         <div
                           class="icon-shape icon-md bg-light-danger text-dark-danger rounded-circle"
@@ -128,8 +133,8 @@ session_start();
                       </div>
                       <!-- project number -->
                       <div class="lh-1">
-                        <h1 class="mb-2 fw-bold fs-2">$93,438.78</h1>
-                        <span>Monthly revenue</span>
+                        <h1 class="mb-2 fw-bold fs-2"><?= number_format($totalRevenue, 0, ',', '.') ?> đ</h1>
+                        <span>Doanh thu đã thanh toán</span>
                       </div>
                     </div>
                   </div>
@@ -144,7 +149,7 @@ session_start();
                         class="d-flex justify-content-between align-items-center mb-6"
                       >
                         <div>
-                          <h4 class="mb-0 fs-5">Orders</h4>
+                          <h4 class="mb-0 fs-5">Đơn hàng</h4>
                         </div>
                         <div
                           class="icon-shape icon-md bg-light-warning text-dark-warning rounded-circle"
@@ -154,11 +159,8 @@ session_start();
                       </div>
                       <!-- project number -->
                       <div class="lh-1">
-                        <h1 class="mb-2 fw-bold fs-2">42,339</h1>
-                        <span>
-                          <span class="text-dark me-1">35+</span>
-                          New Sales
-                        </span>
+                        <h1 class="mb-2 fw-bold fs-2"><?= number_format($totalOrders, 0, ',', '.') ?></h1>
+                        <span>Đơn hàng hiện tại</span>
                       </div>
                     </div>
                   </div>
@@ -173,7 +175,7 @@ session_start();
                         class="d-flex justify-content-between align-items-center mb-6"
                       >
                         <div>
-                          <h4 class="mb-0 fs-5">Customer</h4>
+                          <h4 class="mb-0 fs-5">Khách hàng</h4>
                         </div>
                         <div
                           class="icon-shape icon-md bg-light-info text-dark-info rounded-circle"
@@ -183,11 +185,8 @@ session_start();
                       </div>
                       <!-- project number -->
                       <div class="lh-1">
-                        <h1 class="mb-2 fw-bold fs-2">39,354</h1>
-                        <span>
-                          <span class="text-dark me-1">30+</span>
-                          new in 2 days
-                        </span>
+                        <h1 class="mb-2 fw-bold fs-2"><?= number_format($totalCustomers, 0, ',', '.') ?></h1>
+                        <span>Khách hàng</span>
                       </div>
                     </div>
                   </div>
@@ -204,22 +203,12 @@ session_start();
                     <!-- heading -->
                     <div class="d-flex justify-content-between">
                       <div>
-                        <h3 class="mb-1 fs-5">Revenue</h3>
-                        <small>(+63%) than last year)</small>
-                      </div>
-                      <div>
-                        <!-- select option -->
-                        <select class="form-select">
-                          <option selected>2019</option>
-                          <option value="2023">2020</option>
-                          <option value="2024">2021</option>
-                          <option value="2025">2022</option>
-                          <option value="2025">2023</option>
-                        </select>
+                        <h3 class="mb-1 fs-5">Doanh thu 6 tháng gần nhất</h3>
+                        <small>Chỉ tính đơn đã thanh toán</small>
                       </div>
                     </div>
                     <!-- chart -->
-                    <div id="revenueChart" class="mt-6"></div>
+                    <canvas id="revenueChart" class="mt-6" height="120"></canvas>
                   </div>
                 </div>
               </div>
@@ -229,264 +218,22 @@ session_start();
                   <!-- card body -->
                   <div class="card-body p-6">
                     <!-- heading -->
-                    <h3 class="mb-0 fs-5">Total Sales</h3>
-                    <div
-                      id="totalSale"
-                      class="mt-6 d-flex justify-content-center"
-                    ></div>
+                    <h3 class="mb-0 fs-5">Top 5 danh mục bán chạy</h3>
                     <div class="mt-4">
-                      <!-- list -->
-                      <ul class="list-unstyled mb-0">
-                        <li class="mb-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="8"
-                            height="8"
-                            fill="currentColor"
-                            class="bi bi-circle-fill text-primary"
-                            viewBox="0 0 16 16"
-                          >
-                            <circle cx="8" cy="8" r="8" />
-                          </svg>
-                          <span class="ms-1">
-                            <span class="text-dark">Shippings $32.98</span>
-                            (2%)
-                          </span>
-                        </li>
-                        <li class="mb-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="8"
-                            height="8"
-                            fill="currentColor"
-                            class="bi bi-circle-fill text-warning"
-                            viewBox="0 0 16 16"
-                          >
-                            <circle cx="8" cy="8" r="8" />
-                          </svg>
-                          <span class="ms-1">
-                            <span class="text-dark">Refunds $11</span>
-                            (11%)
-                          </span>
-                        </li>
-                        <li class="mb-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="8"
-                            height="8"
-                            fill="currentColor"
-                            class="bi bi-circle-fill text-danger"
-                            viewBox="0 0 16 16"
-                          >
-                            <circle cx="8" cy="8" r="8" />
-                          </svg>
-                          <span class="ms-1">
-                            <span class="text-dark">Order $14.87</span>
-                            (1%)
-                          </span>
-                        </li>
-                        <li>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="8"
-                            height="8"
-                            fill="currentColor"
-                            class="bi bi-circle-fill text-info"
-                            viewBox="0 0 16 16"
-                          >
-                            <circle cx="8" cy="8" r="8" />
-                          </svg>
-                          <span class="ms-1">
-                            <span class="text-dark">Income 3,271</span>
-                            (86%)
-                          </span>
-                        </li>
-                      </ul>
+                      <canvas id="catePieChart" height="220"></canvas>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- row -->
-            <div class="row">
-              <div class="col-xl-6 col-lg-6 col-md-12 col-12 mb-6">
-                <!-- card -->
-                <div class="card h-100 card-lg">
-                  <!-- card body -->
-                  <div class="card-body p-6">
-                    <h3 class="mb-0 fs-5">Sales Overview</h3>
-                    <div class="mt-6">
-                      <!-- text -->
-                      <div class="mb-5">
-                        <div
-                          class="d-flex align-items-center justify-content-between"
-                        >
-                          <h5 class="fs-6">Total Profit</h5>
-                          <span>
-                            <span class="me-1 text-dark">$1,619</span>
-                            (8.6%)
-                          </span>
-                        </div>
-                        <!-- main wrapper -->
-                        <div>
-                          <!-- progressbar -->
-                          <div
-                            class="progress bg-light-primary"
-                            style="height: 6px"
-                          >
-                            <div
-                              class="progress-bar bg-primary"
-                              role="progressbar"
-                              aria-label="Example 1px high"
-                              style="width: 25%"
-                              aria-valuenow="25"
-                              aria-valuemin="0"
-                              aria-valuemax="100"
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="mb-5">
-                        <!-- text -->
-                        <div
-                          class="d-flex align-items-center justify-content-between"
-                        >
-                          <h5 class="fs-6">Total Income</h5>
-                          <span>
-                            <span class="me-1 text-dark">$3,571</span>
-                            (86.4%)
-                          </span>
-                        </div>
-                        <div>
-                          <!-- progressbar -->
-                          <div
-                            class="progress bg-info-soft"
-                            style="height: 6px"
-                          >
-                            <div
-                              class="progress-bar bg-info"
-                              role="progressbar"
-                              aria-label="Example 1px high"
-                              style="width: 88%"
-                              aria-valuenow="88"
-                              aria-valuemin="0"
-                              aria-valuemax="100"
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <!-- text -->
-                        <div
-                          class="d-flex align-items-center justify-content-between"
-                        >
-                          <h5 class="fs-6">Total Expenses</h5>
-                          <span>
-                            <span class="me-1 text-dark">$3,430</span>
-                            (74.5%)
-                          </span>
-                        </div>
-                        <div>
-                          <!-- progressbar -->
-                          <div
-                            class="progress bg-light-danger"
-                            style="height: 6px"
-                          >
-                            <div
-                              class="progress-bar bg-danger"
-                              role="progressbar"
-                              aria-label="Example 1px high"
-                              style="width: 45%"
-                              aria-valuenow="45"
-                              aria-valuemin="0"
-                              aria-valuemax="100"
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-xl-6 col-lg-6 col-md-12 col-12 mb-6">
-                <div class="position-relative h-100">
-                  <!-- card -->
-                  <div class="card card-lg mb-6">
-                    <!-- card body -->
-                    <div class="card-body px-6 py-8">
-                      <div class="d-flex align-items-center">
-                        <div>
-                          <!-- svg -->
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="32"
-                            height="32"
-                            fill="currentColor"
-                            class="bi bi-bell text-warning"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"
-                            />
-                          </svg>
-                        </div>
-                        <!-- text -->
-                        <div class="ms-4">
-                          <h5 class="mb-1">
-                            Start your day with New Notification.
-                          </h5>
-                          <p class="mb-0">
-                            You have
-                            <a class="link-info" href="#!"
-                              >2 new notification</a
-                            >
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- card -->
-                  <div class="card card-lg">
-                    <!-- card body -->
-                    <div class="card-body px-6 py-8">
-                      <div class="d-flex align-items-center">
-                        <!-- svg -->
-                        <div>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="32"
-                            height="32"
-                            fill="currentColor"
-                            class="bi bi-lightbulb text-success"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a1.964 1.964 0 0 0-.453-.618A5.984 5.984 0 0 1 2 6zm6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1z"
-                            />
-                          </svg>
-                        </div>
-                        <!-- text -->
-                        <div class="ms-4">
-                          <h5 class="mb-1">
-                            Monitor your Sales and Profitability
-                          </h5>
-                          <p class="mb-0">
-                            <a class="link-info" href="#!">View Performance</a>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
             <!-- row -->
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-12 mb-6">
                 <div class="card h-100 card-lg">
                   <!-- heading -->
                   <div class="p-6">
-                    <h3 class="mb-0 fs-5">Recent Order</h3>
+                    <h3 class="mb-0 fs-5">5 đơn hàng mới nhất</h3>
                   </div>
                   <div class="card-body p-0">
                     <!-- table -->
@@ -496,73 +243,35 @@ session_start();
                       >
                         <thead class="bg-light">
                           <tr>
-                            <th scope="col">Order Number</th>
-                            <th scope="col">Product Name</th>
-                            <th scope="col">Order Date</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Status</th>
+                            <th scope="col">Mã đơn</th>
+                            <th scope="col">Người nhận</th>
+                            <th scope="col">Ngày đặt</th>
+                            <th scope="col">Thanh toán</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col" class="text-end">Tổng tiền</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td>#FC0005</td>
-                            <td>Haldiram's Sev Bhujia</td>
-                            <td>28 March 2023</td>
-                            <td>$18.00</td>
-                            <td>
-                              <span
-                                class="badge bg-light-primary text-dark-primary"
-                                >Shipped</span
-                              >
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>#FC0004</td>
-                            <td>NutriChoice Digestive</td>
-                            <td>24 March 2023</td>
-                            <td>$24.00</td>
-                            <td>
-                              <span
-                                class="badge bg-light-warning text-dark-warning"
-                                >Pending</span
-                              >
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>#FC0003</td>
-                            <td>Onion Flavour Potato</td>
-                            <td>8 Feb 2023</td>
-                            <td>$9.00</td>
-                            <td>
-                              <span
-                                class="badge bg-light-danger text-dark-danger"
-                                >Cancel</span
-                              >
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>#FC0002</td>
-                            <td>Blueberry Greek Yogurt</td>
-                            <td>20 Jan 2023</td>
-                            <td>$12.00</td>
-                            <td>
-                              <span
-                                class="badge bg-light-warning text-dark-warning"
-                                >Pending</span
-                              >
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>#FC0001</td>
-                            <td>Slurrp Millet Chocolate</td>
-                            <td>14 Jan 2023</td>
-                            <td>$8.00</td>
-                            <td>
-                              <span class="badge bg-light-info text-dark-info"
-                                >Processing</span
-                              >
-                            </td>
-                          </tr>
+                          <?php if (empty($latestOrders)): ?>
+                            <tr>
+                              <td colspan="6" class="text-center py-4 text-muted">Chưa có đơn hàng</td>
+                            </tr>
+                          <?php else: ?>
+                            <?php foreach ($latestOrders as $o): 
+                              $pstatus = $o['payment_status'] === 'paid' ? 'bg-light-primary text-dark-primary' : 'bg-light-warning text-dark-warning';
+                              $statusLabel = $statusClass[$o['status']]['label'] ?? $o['status'];
+                              $statusBadge = $statusClass[$o['status']]['class'] ?? 'bg-light-secondary text-dark-secondary';
+                            ?>
+                              <tr>
+                                <td>#<?= htmlspecialchars($o['id']) ?></td>
+                                <td><?= htmlspecialchars($o['recipient']) ?></td>
+                                <td><?= date('d/m/Y H:i', strtotime($o['created_at'])) ?></td>
+                                <td><span class="badge <?= $pstatus ?>"><?= $o['payment_status'] === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán' ?></span></td>
+                                <td><span class="badge <?= $statusBadge ?>"><?= htmlspecialchars($statusLabel) ?></span></td>
+                                <td class="text-end text-danger fw-bold"><?= number_format($o['total_price'], 0, ',', '.') ?> đ</td>
+                              </tr>
+                            <?php endforeach; ?>
+                          <?php endif; ?>
                         </tbody>
                       </table>
                     </div>
@@ -583,8 +292,72 @@ session_start();
     <!-- Theme JS -->
     <script src="../js/theme.min.js"></script>
 
-    <script src="../libs/apexcharts/dist/apexcharts.min.js"></script>
-    <script src="../js/vendors/chart.js"></script>
+    <!-- Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const revenueLabels = <?= json_encode($revenueLabels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+      const revenueData   = <?= json_encode($revenueData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+      const cateLabels    = <?= json_encode($topCateLabels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+      const cateData      = <?= json_encode($topCateData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+
+      // Revenue line chart
+      const ctxRevenue = document.getElementById('revenueChart');
+      if (ctxRevenue) {
+        new Chart(ctxRevenue, {
+          type: 'line',
+          data: {
+            labels: revenueLabels,
+            datasets: [{
+              label: 'Doanh thu (đ)',
+              data: revenueData,
+              borderColor: '#0d6efd',
+              backgroundColor: 'rgba(13,110,253,0.1)',
+              tension: 0.3,
+              fill: true,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: ctx => new Intl.NumberFormat('vi-VN').format(ctx.parsed.y) + ' đ'
+                }
+              }
+            },
+            scales: {
+              y: {
+                ticks: {
+                  callback: value => new Intl.NumberFormat('vi-VN').format(value)
+                },
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      }
+
+      // Category pie chart
+      const ctxPie = document.getElementById('catePieChart');
+      if (ctxPie) {
+        new Chart(ctxPie, {
+          type: 'pie',
+          data: {
+            labels: cateLabels,
+            datasets: [{
+              data: cateData,
+              backgroundColor: ['#0d6efd','#6f42c1','#198754','#dc3545','#fd7e14'],
+            }]
+          },
+          options: {
+            plugins: {
+              legend: { position: 'bottom' }
+            }
+          }
+        });
+      }
+    </script>
   </body>
 
   <!-- Mirrored from freshcart.codescandy.com/dashboard/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 14 Nov 2024 06:08:53 GMT -->

@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             // Nếu có thay đổi mật khẩu
             if (!empty($password)) {
-                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
                 $sql = "UPDATE users 
                         SET username = ?, fullname = ?, email = ?, phone = ?, address = ?, role = ?, status = ?, password = ?
                         WHERE id = ?";

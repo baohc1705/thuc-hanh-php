@@ -110,15 +110,7 @@ try {
                         </div>
                     </div>
 
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <h6 class="fw-bold mb-2">Bảo mật</h6>
-                            <p class="text-muted small">Giữ an toàn cho tài khoản bằng cách cập nhật mật khẩu thường xuyên.</p>
-                            <a href="change-password.php" class="btn btn-outline-secondary btn-sm">
-                                <i class="bi bi-shield-lock me-1"></i> Đổi mật khẩu
-                            </a>
-                        </div>
-                    </div>
+                    
 
                 </div>
 

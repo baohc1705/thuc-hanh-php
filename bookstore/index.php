@@ -52,17 +52,16 @@ try {
               ">
             <div
               class="ps-lg-12 py-lg-16 col-xxl-5 col-md-7 py-14 px-8 text-xs-center">
-              <span class="badge text-bg-warning">Opening Sale Discount 50%</span>
+              <span class="badge text-bg-warning">Khuyến mãi khai trương giảm 50%</span>
 
               <h2 class="text-dark display-5 fw-bold mt-4">
-                SuperMarket For Fresh Grocery
+                Cửa hàng bán sách online
               </h2>
               <p class="lead">
-                Introduced a new model for online grocery shopping and
-                convenient home delivery.
+                Mô hình mua sắm sách trực tuyến mới với giao hàng tận nhà tiện lợi.
               </p>
-              <a href="#!" class="btn btn-dark mt-3">
-                Shop Now
+              <a href="shop.php?cate=all" class="btn btn-dark mt-3">
+                Mua ngay
                 <i class="feather-icon icon-arrow-right ms-1"></i>
               </a>
             </div>
@@ -76,19 +75,19 @@ try {
               ">
             <div
               class="ps-lg-12 py-lg-16 col-xxl-5 col-md-7 py-14 px-8 text-xs-center">
-              <span class="badge text-bg-warning">Free Shipping - orders over $100</span>
+              <span class="badge text-bg-warning">Miễn phí giao hàng - đơn từ 500.000đ</span>
               <h2 class="text-dark display-5 fw-bold mt-4">
-                Free Shipping on
+                Giao hàng miễn phí
                 <br />
-                orders over
-                <span class="text-primary">$100</span>
+                cho đơn hàng từ
+                <span class="text-primary">500.000đ</span>
               </h2>
               <p class="lead">
-                Free Shipping to First-Time Customers Only, After promotions
-                and discounts are applied.
+                Miễn phí giao hàng cho khách hàng lần đầu, sau khi áp dụng khuyến mãi
+                và giảm giá.
               </p>
-              <a href="#!" class="btn btn-dark mt-3">
-                Shop Now
+              <a href="shop.php?cate=all" class="btn btn-dark mt-3">
+                Mua ngay
                 <i class="feather-icon icon-arrow-right ms-1"></i>
               </a>
             </div>
@@ -151,13 +150,12 @@ try {
                     background-position: center;
                   ">
                 <div>
-                  <h3 class="fw-bold mb-1">Fruits & Vegetables</h3>
+                  <h3 class="fw-bold mb-1">Sách giáo dục & tham khảo</h3>
                   <p class="mb-4">
-                    Get Upto
+                    Giảm tới
                     <span class="fw-bold">30%</span>
-                    Off
                   </p>
-                  <a href="#!" class="btn btn-dark">Shop Now</a>
+                  <a href="shop.php?cate=all" class="btn btn-dark">Mua ngay</a>
                 </div>
               </div>
             </div>
@@ -173,13 +171,12 @@ try {
                     background-position: center;
                   ">
                 <div>
-                  <h3 class="fw-bold mb-1">Freshly Baked Buns</h3>
+                  <h3 class="fw-bold mb-1">Sách văn học & tiểu thuyết</h3>
                   <p class="mb-4">
-                    Get Upto
+                    Giảm tới
                     <span class="fw-bold">25%</span>
-                    Off
                   </p>
-                  <a href="#!" class="btn btn-dark">Shop Now</a>
+                  <a href="shop.php?cate=all" class="btn btn-dark">Mua ngay</a>
                 </div>
               </div>
             </div>
@@ -206,7 +203,7 @@ try {
                   <div class="text-center position-relative">
                     <img
                         src="products/<?= $p['image'] ?>"
-                        alt="Grocery Ecommerce Template"
+                        alt="<?= htmlspecialchars($p['title']) ?>"
                         class="mb-3 object-fit-contain" 
                         width="200" height="300"
                         />
@@ -221,20 +218,20 @@ try {
                           class="bi bi-eye"
                           data-bs-toggle="tooltip"
                           data-bs-html="true"
-                          title="Quick View"></i>
+                          title="Xem nhanh"></i>
                       </a>
                       <a
                         href="#!"
                         class="btn-action"
                         data-bs-toggle="tooltip"
                         data-bs-html="true"
-                        title="Wishlist"><i class="bi bi-heart"></i></a>
+                        title="Yêu thích"><i class="bi bi-heart"></i></a>
                       <a
                         href="#!"
                         class="btn-action"
                         data-bs-toggle="tooltip"
                         data-bs-html="true"
-                        title="Compare"><i class="bi bi-arrow-left-right"></i></a>
+                        title="So sánh"><i class="bi bi-arrow-left-right"></i></a>
                     </div>
                   </div>
                   <div class="text-small mb-1">
@@ -277,11 +274,9 @@ try {
           <?php
           }
           ?>
-
         </div>
       </div>
     </section>
-
     <section class="my-lg-14 my-8">
       <div class="container">
         <div class="row">
@@ -290,10 +285,10 @@ try {
               <div class="mb-6">
                 <img src="images/icons/clock.svg" alt="" />
               </div>
-              <h3 class="h5 mb-3">10 minute grocery now</h3>
+              <h3 class="h5 mb-3">Giao hàng nhanh chóng</h3>
               <p>
-                Get your order delivered to your doorstep at the earliest from
-                FreshCart pickup stores near you.
+                Nhận đơn hàng tại nhà bạn trong thời gian nhanh nhất từ các cửa hàng
+                UniBook gần bạn.
               </p>
             </div>
           </div>
@@ -302,10 +297,10 @@ try {
               <div class="mb-6">
                 <img src="images/icons/gift.svg" alt="" />
               </div>
-              <h3 class="h5 mb-3">Best Prices & Offers</h3>
+              <h3 class="h5 mb-3">Giá tốt nhất & ưu đãi</h3>
               <p>
-                Cheaper prices than your local supermarket, great cashback
-                offers to top it off. Get best pricess & offers.
+                Giá rẻ hơn so với cửa hàng sách địa phương, nhận nhiều ưu đãi
+                và quà tặng hấp dẫn. Lấy giá tốt nhất.
               </p>
             </div>
           </div>
@@ -314,10 +309,10 @@ try {
               <div class="mb-6">
                 <img src="images/icons/package.svg" alt="" />
               </div>
-              <h3 class="h5 mb-3">Wide Assortment</h3>
+              <h3 class="h5 mb-3">Sách đa dạng</h3>
               <p>
-                Choose from 5000+ products across food, personal care,
-                household, bakery, veg and non-veg & other categories.
+                Chọn từ hàng ngàn cuốn sách về giáo dục, văn học, kinh tế,
+                kỹ năng sống, trẻ em và nhiều danh mục khác.
               </p>
             </div>
           </div>
@@ -326,12 +321,12 @@ try {
               <div class="mb-6">
                 <img src="images/icons/refresh-cw.svg" alt="" />
               </div>
-              <h3 class="h5 mb-3">Easy Returns</h3>
+              <h3 class="h5 mb-3">Đổi trả dễ dàng</h3>
               <p>
-                Not satisfied with a product? Return it at the doorstep & get
-                a refund within hours. No questions asked
-                <a href="#!">policy</a>
-                .
+                Không hài lòng với sản phẩm? Trả lại tại nhà và nhận hoàn tiền
+                trong vòng vài giờ. Không cần câu hỏi theo
+                <a href="shop.php?cate=all">chính sách</a>
+                của chúng tôi.
               </p>
             </div>
           </div>

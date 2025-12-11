@@ -61,11 +61,5 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
     </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <h6 class="mb-2">Hỗ trợ</h6>
-            <p class="small text-muted">Bạn cần trợ giúp? Chúng tôi luôn sẵn sàng hỗ trợ.</p>
-            <a href="contact.php" class="btn btn-outline-primary btn-sm w-100">Liên hệ hỗ trợ</a>
-        </div>
-    </div>
+    
 </aside>

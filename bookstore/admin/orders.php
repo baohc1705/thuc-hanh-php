@@ -175,11 +175,11 @@ $status_options = [
                                         <table class="table table-centered table-hover text-nowrap table-borderless mb-0">
                                             <thead class="bg-light">
                                                 <tr>
-                                                    <th>Mã đơn hàng</th>
-                                                    <th>Khách hàng</th>
                                                     <th>Ngày đặt</th>
-                                                    <th>Phương thức TT</th>
-                                                    <th>Trạng thái thanh toán</th>
+                                                    <th>Khách hàng</th>
+
+                                                    <th>Thanh toán</th>
+
                                                     <th>Trạng thái</th>
                                                     <th>Tổng tiền</th>
                                                     <th></th>
@@ -202,9 +202,7 @@ $status_options = [
                                                     <?php foreach ($orders as $order): ?>
                                                         <tr>
                                                             <td>
-                                                                <a href="order-detail.php?id=<?= $order['id'] ?>" class="text-reset fw-semibold">
-                                                                    <?= $order['id'] ?>
-                                                                </a>
+                                                                <?= date('d/m/Y H:i', strtotime($order['created_at'])) ?>
                                                             </td>
                                                             <td>
                                                                 <div>
@@ -212,18 +210,14 @@ $status_options = [
                                                                     <p class="text-muted small mb-0"><?= htmlspecialchars($order['email']) ?></p>
                                                                 </div>
                                                             </td>
-                                                            <td>
-                                                                <?= date('d/m/Y H:i', strtotime($order['created_at'])) ?>
-                                                            </td>
-                                                            <td class="small">
-                                                                <?= htmlspecialchars($order['payment_method']) ?>
-                                                            </td>
-                                                            <td class="small">
-                                                                <span class="badge <?= $order['payment_status'] === 'paid' ? 'bg-light-primary text-dark-primary' : 'bg-light-warning text-dark-warning' ?>">
-                                                                    <?= htmlspecialchars($order['payment_status'] === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán') ?>
-                                                                </span>
 
+                                                            <td class="small">
+                                                                <p><?= htmlspecialchars($order['payment_method']) ?></p>
+                                                                <p><span class="badge <?= $order['payment_status'] === 'paid' ? 'bg-light-primary text-dark-primary' : 'bg-light-warning text-dark-warning' ?>">
+                                                                        <?= htmlspecialchars($order['payment_status'] === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán') ?>
+                                                                    </span></p>
                                                             </td>
+                                                            
                                                             <td>
                                                                 <?php
                                                                 $statusClass = [
@@ -251,7 +245,7 @@ $status_options = [
                                                                     </a>
                                                                     <ul class="dropdown-menu dropdown-menu-end">
                                                                         <li>
-                                                                            <a class="dropdown-item" href="order-detail.php?id=<?= $order['id'] ?>">
+                                                                            <a class="dropdown-item" href="edit-order.php?id=<?= $order['id'] ?>">
                                                                                 <i class="bi bi-eye me-3"></i>
                                                                                 Xem chi tiết
                                                                             </a>
@@ -260,15 +254,6 @@ $status_options = [
                                                                             <a class="dropdown-item" href="edit-order.php?id=<?= $order['id'] ?>">
                                                                                 <i class="bi bi-pencil-square me-3"></i>
                                                                                 Cập nhật trạng thái
-                                                                            </a>
-                                                                        </li>
-                                                                        <li>
-                                                                            <hr class="dropdown-divider">
-                                                                        </li>
-                                                                        <li>
-                                                                            <a class="dropdown-item text-danger" href="delete-order.php?id=<?= $order['id'] ?>" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
-                                                                                <i class="bi bi-trash me-3"></i>
-                                                                                Xóa
                                                                             </a>
                                                                         </li>
                                                                     </ul>

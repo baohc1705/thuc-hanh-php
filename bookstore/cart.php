@@ -165,7 +165,7 @@ $cartStats = getCartTotal();
                                                         <form action="cart.php?action=update&id=<?= $id ?>" method="post" class="d-inline me-3">
                                                             <div class="input-group" style="width: 140px;">
                                                                 <input type="number" name="quantity" value="<?= $item['quantity'] ?>"
-                                                                    min="1" class="form-control form-control-sm" required>
+                                                                    min="1" max="100" class="form-control form-control-sm" required>
                                                                 <button type="submit" class="btn btn-outline-primary btn-sm">Cập nhật</button>
                                                             </div>
                                                         </form>
@@ -179,11 +179,6 @@ $cartStats = getCartTotal();
 
                                                 </div>
                                             </div>
-
-
-
-
-
                                         </div>
                                     <?php endforeach; ?>
 
