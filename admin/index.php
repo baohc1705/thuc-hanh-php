@@ -84,6 +84,7 @@ $statusClass = [
   'confirmed' => ['label' => 'Đã xác nhận', 'class' => 'bg-light-primary text-dark-primary'],
   'shipping'  => ['label' => 'Đang giao', 'class' => 'bg-light-info text-dark-info'],
   'delivered' => ['label' => 'Đã giao', 'class' => 'bg-light-success text-dark-success'],
+  'received' => ['label' => 'Đã nhận', 'class' => 'bg-light-info text-dark-success'],
   'cancelled' => ['label' => 'Đã hủy', 'class' => 'bg-light-danger text-dark-danger'],
 ];
 ?>

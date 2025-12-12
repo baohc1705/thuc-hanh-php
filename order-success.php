@@ -102,7 +102,9 @@ try {
                                     <tr>
                                         <td class="text-muted">Trạng thái thanh toán</td>
                                         <td>
-                                            <span class="badge <?= $order['payment_status'] === 'paid' ? 'bg-success' : 'bg-warning' ?> fs-6"><?= $order['payment_status'] ?></span>
+                                            <span class="badge <?= $order['payment_status'] === 'paid' ? 'bg-success' : 'bg-warning' ?> fs-6">
+                                                <?= $order['payment_status'] === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'?>
+                                            </span>
                                         </td>
                                     </tr>
                                     <?php if (!empty($order['note'])): ?>

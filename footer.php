@@ -23,7 +23,7 @@ try {
             <h6 class="mb-3">Về Unibook</h6>
             <p>Unibook — Nhà sách trực tuyến cung cấp sách giáo khoa, tham khảo, văn học và tài liệu học tập. Hỗ trợ giao hàng toàn quốc và chính sách đổi trả linh hoạt.</p>
             <ul class="list-unstyled small">
-              <li>Địa chỉ: Hà Nội, Việt Nam</li>
+              <li>Địa chỉ: Đồng Tháp, Việt Nam</li>
               <li>Hotline: 1900-xxx-xxx</li>
               <li>Email: <a href="mailto:support@unibook.vn">support@unibook.vn</a></li>
             </ul>

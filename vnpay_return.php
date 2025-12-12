@@ -3,13 +3,6 @@ session_start();
 require_once 'config/config.php';
 $vnp_Config = require 'config/vnpay_config.php';
 
-// LOG
-file_put_contents(__DIR__ . "/vnpay_log.txt",
-    date('Y-m-d H:i:s') . " | URL: " . $_SERVER['REQUEST_URI'] . "\n" .
-    "GET: " . json_encode($_GET) . "\n" .
-    "---\n",
-    FILE_APPEND
-);
 
 // Lấy tham số trả về
 $inputData = [];
@@ -43,14 +36,6 @@ $orderId = $inputData['vnp_TxnRef'] ?? '';
 $responseCode = $inputData['vnp_ResponseCode'] ?? '';
 $transactionNo = $inputData['vnp_TransactionNo'] ?? '';
 
-file_put_contents(__DIR__ . "/vnpay_log.txt",
-    "OrderID: $orderId | ResponseCode: $responseCode | TransNo: $transactionNo\n" .
-    "ExpectedHash: $secureHash\n" .
-    "ReceivedHash: $vnp_SecureHash\n" .
-    "Match: " . ($secureHash === $vnp_SecureHash ? 'YES' : 'NO') . "\n" .
-    "---\n",
-    FILE_APPEND
-);
 
 // Kiểm tra hash và response code
 if ($secureHash === $vnp_SecureHash) {
@@ -118,11 +103,6 @@ if ($secureHash === $vnp_SecureHash) {
                 unset($_SESSION['pending_vnpay_order']);
                 $pdo->commit();
 
-                file_put_contents(__DIR__ . "/vnpay_log.txt",
-                    "Order $orderId created/updated successfully\n---\n",
-                    FILE_APPEND
-                );
-
                 header("Location: order-success.php?order_id=$orderId&payment=vnpay");
                 exit;
             } else {
@@ -131,28 +111,14 @@ if ($secureHash === $vnp_SecureHash) {
 
         } catch (Exception $e) {
             $pdo->rollBack();
-            file_put_contents(__DIR__ . "/vnpay_log.txt",
-                "Error: " . $e->getMessage() . "\n---\n",
-                FILE_APPEND
-            );
             header("Location: order-fail.php?order_id=$orderId&error=update_failed");
             exit;
         }
     } else {
-        //Người dùng hủy hoặc lỗi thanh toán
-        file_put_contents(__DIR__ . "/vnpay_log.txt",
-            "Payment failed. ResponseCode: $responseCode\n---\n",
-            FILE_APPEND
-        );
         header("Location: order-fail.php?order_id=$orderId&error=payment_failed&vnp_code=$responseCode");
         exit;
     }
 } else {
-    // Hash không khớp → gian lận
-    file_put_contents(__DIR__ . "/vnpay_log.txt",
-    "Hash mismatch!\n---\n",
-    FILE_APPEND
-    );
     header("Location: order-fail.php?order_id=&error=invalid_hash");
     exit;
 }

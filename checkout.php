@@ -254,7 +254,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="payment_method" id="vnpay" value="vnpay">
                                     <label class="form-check-label fs-5" for="vnpay">
-                                        <img src="https://vnpay.vn/assets/images/logo-icon.png" width="20" class="me-2">
+                                        <img src="https://vinadesign.vn/uploads/images/2023/05/vnpay-logo-vinadesign-25-12-57-55.jpg" width="20" class="me-2">
                                         Thanh toán qua VNPAY (Thẻ ATM / QR / Ví)
                                     </label>
                                 </div>

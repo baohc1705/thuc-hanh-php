@@ -19,6 +19,9 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $productsPerPage = 12;
 $totalProducts = 0;
 $totalPages = 1;
+$searchTerm = isset($_GET['search']) ? trim($_GET['search']) : '';
+$cateValue = $_GET['cate'] ?? 'all';
+$sort = $_GET['sort'] ?? 'newest';
 
 try {
    $sql = 'SELECT * FROM category c WHERE c.status = 1 ORDER BY c.name';
@@ -28,86 +31,100 @@ try {
    $err .= $e->getMessage();
 }
 
-if (isset($_GET['cate'])) {
-   $cateValue = $_GET['cate'];
-   $sort = $_GET['sort'] ?? 'newest';
+$allowedSorts = [
+   'newest'     => 'p.createAt DESC',
+   'price_asc'  => 'p.price ASC',
+   'price_desc' => 'p.price DESC',
+];
+$orderBy = $allowedSorts[$sort] ?? $allowedSorts['newest'];
 
+// Build search condition once to reuse in queries
+$searchSql = '';
+$searchParam = null;
+if ($searchTerm !== '') {
+   $searchSql = ' AND p.title LIKE :search';
+   $searchParam = '%' . $searchTerm . '%';
+}
 
-   $allowedSorts = [
-      'newest'     => 'p.createAt DESC',
-      'price_asc'  => 'p.price ASC',
-      'price_desc' => 'p.price DESC',
-   ];
+try {
+   if ($cateValue === 'all') {
+      $sqlCount = "SELECT COUNT(*) as total FROM product p WHERE p.status = 1{$searchSql}";
+      $stmtCount = $pdo->prepare($sqlCount);
+      if ($searchParam !== null) {
+         $stmtCount->bindValue(':search', $searchParam, PDO::PARAM_STR);
+      }
+      $stmtCount->execute();
+      $totalProducts = (int)$stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
 
-   $orderBy = $allowedSorts['newest'] ?? 'p.createAt DESC';
-   if (isset($allowedSorts[$sort])) {
-      $orderBy = $allowedSorts[$sort];
-   }
+      $totalPages = ceil($totalProducts / $productsPerPage);
+      if ($currentPage > $totalPages && $totalPages > 0) $currentPage = $totalPages;
+      if ($currentPage < 1) $currentPage = 1;
 
-   try {
-      if ($cateValue === 'all') {
-         // === TẤT CẢ SẢN PHẨM ===
-         $sqlCount = 'SELECT COUNT(*) as total FROM product WHERE status = 1';
-         $stmtCount = $pdo->query($sqlCount);
-         $totalProducts = $stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
+      $offset = ($currentPage - 1) * $productsPerPage;
+
+      $sql = "SELECT p.*, c.name as category_name
+                 FROM product p
+                 LEFT JOIN category c ON p.category_id = c.id
+                 WHERE p.status = 1{$searchSql}
+                 ORDER BY $orderBy
+                 LIMIT :limit OFFSET :offset";
+
+      $stmt = $pdo->prepare($sql);
+      if ($searchParam !== null) {
+         $stmt->bindValue(':search', $searchParam, PDO::PARAM_STR);
+      }
+      $stmt->bindValue(':limit', $productsPerPage, PDO::PARAM_INT);
+      $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+      $stmt->execute();
+      $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      $category = ['id' => 'all', 'name' => 'Tất cả sản phẩm'];
+   } else {
+      // === THEO DANH MỤC ===
+      $cateId = (int)$cateValue;
+
+      $stmt2 = $pdo->prepare('SELECT * FROM category WHERE id = ? AND status = 1 LIMIT 1');
+      $stmt2->execute([$cateId]);
+      $category = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+      if (!$category) {
+         $err = "Danh mục không tồn tại hoặc đã bị ẩn!";
+      } else {
+         $sqlCount = "SELECT COUNT(*) as total FROM product p WHERE p.category_id = :cate_id AND p.status = 1{$searchSql}";
+         $stmtCount = $pdo->prepare($sqlCount);
+         $stmtCount->bindValue(':cate_id', $cateId, PDO::PARAM_INT);
+         if ($searchParam !== null) {
+            $stmtCount->bindValue(':search', $searchParam, PDO::PARAM_STR);
+         }
+         $stmtCount->execute();
+         $totalProducts = (int)$stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
+
+         $totalPages = ceil($totalProducts / $productsPerPage);
+         if ($currentPage > $totalPages && $totalPages > 0) $currentPage = $totalPages;
+         if ($currentPage < 1) $currentPage = 1;
 
          $offset = ($currentPage - 1) * $productsPerPage;
 
          $sql = "SELECT p.*, c.name as category_name
-                 FROM product p
-                 LEFT JOIN category c ON p.category_id = c.id
-                 WHERE p.status = 1
-                 ORDER BY $orderBy
-                 LIMIT :limit OFFSET :offset";
+                    FROM product p
+                    LEFT JOIN category c ON p.category_id = c.id
+                    WHERE p.category_id = :cate_id AND p.status = 1{$searchSql}
+                    ORDER BY $orderBy
+                    LIMIT :limit OFFSET :offset";
 
          $stmt = $pdo->prepare($sql);
+         $stmt->bindValue(':cate_id', $cateId, PDO::PARAM_INT);
+         if ($searchParam !== null) {
+            $stmt->bindValue(':search', $searchParam, PDO::PARAM_STR);
+         }
          $stmt->bindValue(':limit', $productsPerPage, PDO::PARAM_INT);
          $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
          $stmt->execute();
          $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-         $category = ['id' => 'all', 'name' => 'Tất cả sản phẩm'];
-      } else {
-         // === THEO DANH MỤC ===
-         $cateId = (int)$cateValue;
-
-         $stmt2 = $pdo->prepare('SELECT * FROM category WHERE id = ? AND status = 1 LIMIT 1');
-         $stmt2->execute([$cateId]);
-         $category = $stmt2->fetch(PDO::FETCH_ASSOC);
-
-         if (!$category) {
-            $err = "Danh mục không tồn tại hoặc đã bị ẩn!";
-         } else {
-            $sqlCount = 'SELECT COUNT(*) as total FROM product WHERE category_id = ? AND status = 1';
-            $stmtCount = $pdo->prepare($sqlCount);
-            $stmtCount->execute([$cateId]);
-            $totalProducts = $stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
-
-            $offset = ($currentPage - 1) * $productsPerPage;
-
-            $sql = "SELECT p.*, c.name as category_name
-                    FROM product p
-                    LEFT JOIN category c ON p.category_id = c.id
-                    WHERE p.category_id = :cate_id AND p.status = 1
-                    ORDER BY $orderBy
-                    LIMIT :limit OFFSET :offset";
-
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindValue(':cate_id', $cateId, PDO::PARAM_INT);
-            $stmt->bindValue(':limit', $productsPerPage, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-            $stmt->execute();
-            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-         }
       }
-
-      $totalPages = ceil($totalProducts / $productsPerPage);
-
-      if ($currentPage > $totalPages && $totalPages > 0) $currentPage = $totalPages;
-      if ($currentPage < 1) $currentPage = 1;
-   } catch (PDOException $e) {
-      $err .= 'Lỗi database: ' . $e->getMessage();
    }
+} catch (PDOException $e) {
+   $err .= 'Lỗi database: ' . $e->getMessage();
 }
 ?>
 
@@ -179,7 +196,10 @@ if (isset($_GET['cate'])) {
                   <div class="card mb-4 bg-light border-0">
                      <!-- card body -->
                      <div class="card-body p-9">
-                        <h2 class="mb-0 fs-1"><?= $category ? htmlspecialchars($category['name']) : 'Shop' ?></h2>
+                        <h2 class="mb-0 fs-1">
+                           <?= $category ? htmlspecialchars($category['name']) : 'Shop' ?>
+                           <?= $searchTerm !== '' ? ' - Tìm kiếm: ' . htmlspecialchars($searchTerm) : '' ?>
+                        </h2>
                      </div>
                   </div>
                   <!-- list icon -->

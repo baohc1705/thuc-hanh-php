@@ -150,12 +150,12 @@ try {
                     background-position: center;
                   ">
                 <div>
-                  <h3 class="fw-bold mb-1">Sách giáo dục & tham khảo</h3>
+                  <h3 class="fw-bold mb-1">Comic Marvel</h3>
                   <p class="mb-4">
                     Giảm tới
                     <span class="fw-bold">30%</span>
                   </p>
-                  <a href="shop.php?cate=all" class="btn btn-dark">Mua ngay</a>
+                  <a href="shop.php?cate=8" class="btn btn-dark">Mua ngay</a>
                 </div>
               </div>
             </div>
@@ -171,12 +171,12 @@ try {
                     background-position: center;
                   ">
                 <div>
-                  <h3 class="fw-bold mb-1">Sách văn học & tiểu thuyết</h3>
+                  <h3 class="fw-bold mb-1">Truyện tranh</h3>
                   <p class="mb-4">
                     Giảm tới
                     <span class="fw-bold">25%</span>
                   </p>
-                  <a href="shop.php?cate=all" class="btn btn-dark">Mua ngay</a>
+                  <a href="shop.php?cate=12" class="btn btn-dark">Mua ngay</a>
                 </div>
               </div>
             </div>
@@ -208,31 +208,7 @@ try {
                         width="200" height="300"
                         />
 
-                    <div class="card-product-action">
-                      <a
-                        href="#!"
-                        class="btn-action"
-                        data-bs-toggle="modal"
-                        data-bs-target="#quickViewModal">
-                        <i
-                          class="bi bi-eye"
-                          data-bs-toggle="tooltip"
-                          data-bs-html="true"
-                          title="Xem nhanh"></i>
-                      </a>
-                      <a
-                        href="#!"
-                        class="btn-action"
-                        data-bs-toggle="tooltip"
-                        data-bs-html="true"
-                        title="Yêu thích"><i class="bi bi-heart"></i></a>
-                      <a
-                        href="#!"
-                        class="btn-action"
-                        data-bs-toggle="tooltip"
-                        data-bs-html="true"
-                        title="So sánh"><i class="bi bi-arrow-left-right"></i></a>
-                    </div>
+                    
                   </div>
                   <div class="text-small mb-1">
                     <small><?= $p['category_name'] ?></small>

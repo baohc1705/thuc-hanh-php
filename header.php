@@ -1,7 +1,9 @@
     <?php
     include('config/config.php');
 
-    $err = "";
+$err = "";
+// Preserve search keyword across pages to pre-fill the search box
+$searchKeyword = isset($_GET['search']) ? trim($_GET['search']) : '';
     try {
       $sql = 'SELECT * FROM category c WHERE c.status = 1 ORDER BY c.name';
       $stmt = $pdo->query($sql);
@@ -67,16 +69,18 @@
               </div>
             </div>
             <div class="col-xxl-5 col-lg-5 d-none d-lg-block">
-              <form action="#">
+              <form action="shop.php" method="get">
                 <div class="input-group">
                   <input
                     class="form-control rounded"
                     type="search"
+                    name="search"
+                    value="<?= htmlspecialchars($searchKeyword) ?>"
                     placeholder="Tìm kiếm sản phẩm" />
                   <span class="input-group-append">
                     <button
                       class="btn bg-white border border-start-0 ms-n10 rounded-0 rounded-end"
-                      type="button">
+                      type="submit">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
@@ -257,16 +261,18 @@
             </div>
             <div class="offcanvas-body">
               <div class="d-block d-lg-none mb-4">
-                <form action="#">
+                <form action="shop.php" method="get">
                   <div class="input-group">
                     <input
                       class="form-control rounded"
                       type="search"
+                      name="search"
+                      value="<?= htmlspecialchars($searchKeyword) ?>"
                       placeholder="Tìm kiếm sản phẩm" />
                     <span class="input-group-append">
                       <button
                         class="btn bg-white border border-start-0 ms-n10 rounded-0 rounded-end"
-                        type="button">
+                        type="submit">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"
@@ -381,12 +387,15 @@
                   <li class="nav-item w-100 w-lg-auto">
                     <a class="nav-link" href="shop.php?cate=all">Sản phẩm</a>
                   </li>
-                   <li class="nav-item w-100 w-lg-auto">
+                  <li class="nav-item w-100 w-lg-auto">
                     <a class="nav-link" href="labthuchanh.php">Lab thực hành</a>
+                  </li>
+                  <li class="nav-item w-100 w-lg-auto">
+                    <a class="nav-link" href="https://github.com/baohc1705/thuc-hanh-php" target="_blank">Source code</a>
                   </li>
                   <?php if (!empty($user_session) && $user_session['role'] == 1): ?>
                     <li class="nav-item w-100 w-lg-auto">
-                      <a class="nav-link text-danger fw-bold" href="admin/index.php">
+                      <a class="nav-link text-danger fw-bold" href="admin/index.php" target="_blank">
                         Quản trị
                       </a>
                     </li>
