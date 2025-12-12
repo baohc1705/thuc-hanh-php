@@ -1,15 +1,18 @@
 <?php
+// khởi tạo session
 session_start();
 include('config/config.php');
 include('config/vnpay_config.php');
 $vnp_Config = include 'config/vnpay_config.php';
 
+// lấy giỏ hàng từ cookie để hiển thị
 function getCart()
 {
     return isset($_COOKIE['unibook_cart']) ? json_decode($_COOKIE['unibook_cart'], true) : [];
 }
 $cart = getCart();
 
+// tính tổng tiền của giỏ hàng
 function getCartTotal()
 {
     global $cart;
@@ -26,17 +29,20 @@ $err = '';
 
 // --- Xử lý đặt hàng ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // kiểm tra người dùng đã đăng nhập chưa
     if (!isset($_SESSION['user_id'])) {
         $err = "Vui lòng đăng nhập để đặt hàng!";
     } elseif (empty($cart)) {
         $err = "Giỏ hàng trống!";
     } else {
+        // lấy thông tin đơn hàng từ request
         $recipient = trim($_POST['recipient'] ?? '');
         $phone     = trim($_POST['phone'] ?? '');
         $address   = trim($_POST['address'] ?? '');
         $note      = trim($_POST['note'] ?? '');
         $payment   = $_POST['payment_method'] ?? 'cod';
 
+        // kiểm tra thông tin có validate không
         if (empty($recipient)) $err = "Vui lòng nhập họ tên người nhận";
         elseif (empty($phone)) $err = "Vui lòng nhập số điện thoại";
         elseif (!preg_match('/^0[0-9]{9,10}$/', $phone)) $err = "Số điện thoại không hợp lệ";
@@ -45,6 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 // Tạo mã đơn hàng dạng chuỗi thời gian + 4 số random
                 $order_id = date('YmdHis') . rand(1000, 9999);
+
+                // lấy thời gian hiện tại
                 $date_now = date('Y-m-d H:i:s');
 
                 if ($payment === 'cod') {

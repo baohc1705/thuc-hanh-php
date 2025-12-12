@@ -1,11 +1,12 @@
 <?php
+// gọi các file cần thiết
 include('../config/_admin-auth.php');
 include('../config/config.php');
 
 $order = null;
 $err = '';
 $msg = '';
-
+// lấy id đơn hàng cần cập nhật
 $order_id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($order_id <= 0) {
