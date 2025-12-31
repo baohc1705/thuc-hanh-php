@@ -8,3 +8,4 @@ Thông tin sinh viên:
 - Bài tập đồ án lớn
 ## Đề tài: website bán sách online
 ### Địa chỉ website: [huynhchibao.42web.io](https://huynhchibao.42web.io/)
+**NO PAIN NO GAIN 💪**
